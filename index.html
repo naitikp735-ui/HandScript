@@ -1618,10 +1618,16 @@
       /* Responsive Mobile / Tablet Layout */
       @media (max-width: 960px) {
         .app-header {
+          position: relative;
           padding: 8px 12px;
           gap: 8px;
           height: auto;
           min-height: 52px;
+          flex-wrap: wrap;
+        }
+
+        .header-actions {
+          gap: 8px;
           flex-wrap: wrap;
         }
 
@@ -1631,6 +1637,7 @@
 
         .mobile-tabs-bar {
           display: flex;
+          top: 0;
         }
 
         .workspace {
@@ -1676,8 +1683,62 @@
           -webkit-overflow-scrolling: touch;
         }
 
+        .modal-backdrop {
+          padding: 8px;
+        }
+
+        .modal-shell,
+        .tool-modal-shell,
+        .diagram-modal-shell,
+        .export-modal-shell {
+          max-height: 95dvh;
+          border-radius: 10px;
+        }
+
+        .font-studio-shell,
         .calib-modal-shell {
-          height: 94vh;
+          height: 95dvh;
+          max-height: 95dvh;
+          border-radius: 10px;
+        }
+
+        .modal-header {
+          padding: 12px 14px;
+          gap: 10px;
+        }
+
+        .modal-body-pad {
+          padding: 12px 14px;
+        }
+
+        .modal-footer {
+          padding: 10px 14px;
+          flex-wrap: wrap;
+        }
+
+        .fs-steps-bar {
+          padding: 8px 10px;
+          gap: 6px;
+        }
+
+        .fs-step-btn {
+          flex: 1 1 0;
+          min-width: 92px;
+          justify-content: center;
+          text-align: center;
+          padding: 8px 6px;
+          font-size: 11.5px;
+        }
+
+        .fs-step-panel {
+          grid-template-columns: 1fr;
+          padding: 12px;
+          gap: 12px;
+        }
+
+        .fs-stage {
+          min-height: 240px;
+          padding: 8px;
         }
 
         .calib-body {
@@ -1689,6 +1750,53 @@
         .calib-sidebar {
           border-left: none;
           border-top: 1px solid var(--border);
+        }
+
+        .export-gallery {
+          grid-template-columns: 1fr;
+          padding: 12px;
+          gap: 12px;
+        }
+
+        .diagram-toolbar {
+          padding: 8px 10px;
+          gap: 5px;
+        }
+
+        .diagram-canvas-stage {
+          padding: 8px;
+          min-height: 220px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .text-field,
+        .native-select,
+        .text-input,
+        #textInput {
+          font-size: 16px;
+        }
+
+        .options-grid,
+        .header-fields-grid,
+        .backup-row {
+          grid-template-columns: 1fr;
+        }
+
+        .fs-glyphs-grid {
+          grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+          gap: 6px;
+        }
+
+        .fs-live-sample-box {
+          font-size: 24px;
+        }
+
+        .app-toast {
+          left: 10px;
+          right: 10px;
+          bottom: 10px;
+          max-width: none;
         }
       }
 
@@ -2884,7 +2992,7 @@
         <!-- Step 2: Upload Photo & Align 4 Corner Markers -->
         <div id="fsStepPanel2" class="fs-step-panel" hidden>
           <div class="fs-sidebar">
-            <button type="button" id="fsPickPhotoBtn" class="btn-primary">Upload Sheet Photo (JPG / PNG / HEIC)</button>
+            <button type="button" id="fsPickPhotoBtn" class="btn-primary">Take / Upload Sheet Photo</button>
             <input type="file" id="fsPhotoFileInput" accept="image/*" hidden />
             <button type="button" id="fsTryDemoPhotoBtn" class="btn-secondary">Try Demo Filled Photo</button>
 
@@ -3752,12 +3860,10 @@ Next steps for tomorrow's studio session:
         return window.katex;
       }
 
-      let roughModPromise = null;
       async function getRoughJsLib() {
-        if (!roughModPromise) {
-          roughModPromise = import('https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.esm.js').then((m) => m.default || m);
-        }
-        return roughModPromise;
+        if (window.rough) return window.rough;
+        await loadClassicScript('https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.js');
+        return window.rough;
       }
 
       async function getMammothLib() {
@@ -10573,17 +10679,18 @@ Next steps for tomorrow's studio session:
           ctx.stroke();
 
           const labels = ['TL', 'TR', 'BL', 'BR'];
+          const handleR = window.innerWidth <= 760 ? 17 : 12;
           pts.forEach((p, idx) => {
             ctx.fillStyle = fsState.draggingIdx === idx ? '#ef4444' : '#1d4ed8';
             ctx.beginPath();
-            ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+            ctx.arc(p.x, p.y, handleR, 0, Math.PI * 2);
             ctx.fill();
             ctx.strokeStyle = '#ffffff';
             ctx.lineWidth = 2.5;
             ctx.stroke();
 
             ctx.fillStyle = '#ffffff';
-            ctx.font = '700 9px "JetBrains Mono", monospace';
+            ctx.font = `700 ${handleR > 14 ? 11 : 9}px "JetBrains Mono", monospace`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(labels[idx], p.x, p.y + 0.5);
@@ -11094,6 +11201,9 @@ Next steps for tomorrow's studio session:
           dom.fsGlyphBaselineVal.textContent = String(g.baselineNudge || 0);
           redrawTouchupCanvas();
           renderGlyphsGrid();
+          if (window.innerWidth <= 960) {
+            dom.fsTouchupBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
         }
 
         function redrawTouchupCanvas() {
@@ -11287,7 +11397,7 @@ Next steps for tomorrow's studio session:
           if (!fsState.photoImg || !fsState.corners) return;
           const pt = getPhotoCoordFromEvt(e);
           const natW = fsState.photoImg.naturalWidth || fsState.photoImg.width;
-          const hitDist = Math.max(24, natW * 0.045);
+          const hitDist = Math.max(window.innerWidth <= 760 ? 44 : 26, natW * (window.innerWidth <= 760 ? 0.075 : 0.048));
           let bestIdx = -1;
           let bestD = hitDist;
           fsState.corners.forEach((c, idx) => {

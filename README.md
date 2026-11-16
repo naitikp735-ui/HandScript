@@ -29,7 +29,9 @@ You can set this up completely from your browser or phone:
 
 ## Features
 
+- **Inbuilt Handwriting Font Maker Studio (`.otf`)**: download/print an A4 template sheet (or view the filled example), write with pen on paper, snap or upload a phone photo, auto-detect the 4 corners, fine-tune individual letters or baseline height, preview live typing, download a portable `.otf` font file, or save & apply immediately inside HandScript
 - **14 bundled handwriting fonts** stored locally in `public/fonts` + **Upload my handwriting font** (`.ttf`, `.otf`, `.woff`, `.woff2`) saved in IndexedDB + **Joined mode** for cursive scripts
+- **Mobile-first & touch-friendly UI**: responsive phone/tablet workspace with dedicated **Text / Style / Paper / Look / Export** tabs, phone camera upload support, touch-draggable calibration & diagram tools, and Add-to-Home-Screen full-screen mode
 - **Formulas (`Σ Formula`)**: simple syntax (`a/b`, `x^2`, `sqrt(x)`, `int_0^pi`) and LaTeX (`$...$` inline & `$$...$$` centered display), rendered as wobbly handwritten strokes snapped to ruled lines
 - **Tables (`Table`)**: hand-drawn wobbly grids with corner overshoot, Excel/Sheets paste, column width ratios, and multi-page row splitting
 - **Images & Diagrams**: **Image** insertion with **Sketchify** edge-drawing filter + interactive **`rough.js` Diagram** editor with handwritten labels
