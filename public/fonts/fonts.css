@@ -3,7 +3,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/caveat-400.woff2') format('woff2');
+  src: url('./caveat-400.woff2') format('woff2');
 }
 
 @font-face {
@@ -11,7 +11,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/caveat-700.woff2') format('woff2');
+  src: url('./caveat-700.woff2') format('woff2');
 }
 
 @font-face {
@@ -19,7 +19,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/patrick-hand.woff2') format('woff2');
+  src: url('./patrick-hand.woff2') format('woff2');
 }
 
 @font-face {
@@ -27,7 +27,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/indie-flower.woff2') format('woff2');
+  src: url('./indie-flower.woff2') format('woff2');
 }
 
 @font-face {
@@ -35,7 +35,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/shadows-into-light.woff2') format('woff2');
+  src: url('./shadows-into-light.woff2') format('woff2');
 }
 
 @font-face {
@@ -43,7 +43,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/covered-by-your-grace.woff2') format('woff2');
+  src: url('./covered-by-your-grace.woff2') format('woff2');
 }
 
 @font-face {
@@ -51,7 +51,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/gloria-hallelujah.woff2') format('woff2');
+  src: url('./gloria-hallelujah.woff2') format('woff2');
 }
 
 @font-face {
@@ -59,7 +59,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/nanum-pen-script.woff2') format('woff2');
+  src: url('./nanum-pen-script.woff2') format('woff2');
 }
 
 @font-face {
@@ -67,7 +67,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/reenie-beanie.woff2') format('woff2');
+  src: url('./reenie-beanie.woff2') format('woff2');
 }
 
 @font-face {
@@ -75,7 +75,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/zeyada.woff2') format('woff2');
+  src: url('./zeyada.woff2') format('woff2');
 }
 
 @font-face {
@@ -83,7 +83,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/kristi.woff2') format('woff2');
+  src: url('./kristi.woff2') format('woff2');
 }
 
 @font-face {
@@ -91,7 +91,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/la-belle-aurore.woff2') format('woff2');
+  src: url('./la-belle-aurore.woff2') format('woff2');
 }
 
 @font-face {
@@ -99,7 +99,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/cedarville-cursive.woff2') format('woff2');
+  src: url('./cedarville-cursive.woff2') format('woff2');
 }
 
 @font-face {
@@ -107,7 +107,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/homemade-apple.woff2') format('woff2');
+  src: url('./homemade-apple.woff2') format('woff2');
 }
 
 @font-face {
@@ -115,7 +115,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/just-another-hand.woff2') format('woff2');
+  src: url('./just-another-hand.woff2') format('woff2');
 }
 
 @font-face {
@@ -123,7 +123,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/plus-jakarta-sans-400.woff2') format('woff2');
+  src: url('./plus-jakarta-sans-400.woff2') format('woff2');
 }
 
 @font-face {
@@ -131,7 +131,7 @@
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/plus-jakarta-sans-500.woff2') format('woff2');
+  src: url('./plus-jakarta-sans-500.woff2') format('woff2');
 }
 
 @font-face {
@@ -139,7 +139,7 @@
   font-style: normal;
   font-weight: 600;
   font-display: swap;
-  src: url('/fonts/plus-jakarta-sans-600.woff2') format('woff2');
+  src: url('./plus-jakarta-sans-600.woff2') format('woff2');
 }
 
 @font-face {
@@ -147,7 +147,7 @@
   font-style: normal;
   font-weight: 700;
   font-display: swap;
-  src: url('/fonts/plus-jakarta-sans-700.woff2') format('woff2');
+  src: url('./plus-jakarta-sans-700.woff2') format('woff2');
 }
 
 @font-face {
@@ -155,7 +155,7 @@
   font-style: normal;
   font-weight: 400;
   font-display: swap;
-  src: url('/fonts/jetbrains-mono-400.woff2') format('woff2');
+  src: url('./jetbrains-mono-400.woff2') format('woff2');
 }
 
 @font-face {
@@ -163,5 +163,5 @@
   font-style: normal;
   font-weight: 500;
   font-display: swap;
-  src: url('/fonts/jetbrains-mono-500.woff2') format('woff2');
+  src: url('./jetbrains-mono-500.woff2') format('woff2');
 }
