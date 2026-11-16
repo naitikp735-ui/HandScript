@@ -1,0 +1,6 @@
+{
+  "name": "HandScript",
+  "description": "Offline text-to-handwriting converter with realistic ink rendering, custom paper calibration, and PNG/PDF export.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
