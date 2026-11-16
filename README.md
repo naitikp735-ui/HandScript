@@ -4,9 +4,7 @@
 >
 > **Once GitHub Pages is enabled (see 1-minute setup below), tap your live link below to open HandScript immediately—no downloads or terminal needed:**
 >
-> **[Launch HandScript App](https://YOUR_GITHUB_USERNAME.github.io/YOUR_REPO_NAME/)**  
-> *(Tap the pencil **Edit** icon on this `README.md` in GitHub and replace `YOUR_GITHUB_USERNAME` and `YOUR_REPO_NAME` with yours—or tap the live link GitHub automatically adds in the **Deployments** / **About** section of your repository.)*
-
+> **[Launch HandScript App](https://naitikp735-ui.github.io/HandScript/)**  
 ---
 
 ## One-Time Setup on GitHub (No Terminal Required)
