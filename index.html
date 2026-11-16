@@ -1450,11 +1450,179 @@
         border-bottom: none;
       }
 
+      /* Handwriting Font Maker Studio Modal */
+      .font-studio-shell {
+        max-width: 1080px;
+        height: 92vh;
+        max-height: 92vh;
+      }
+
+      .fs-steps-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 20px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface-subtle);
+        flex-wrap: wrap;
+      }
+
+      .fs-step-btn {
+        appearance: none;
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        color: var(--text-secondary);
+        border-radius: var(--radius-sm);
+        padding: 7px 14px;
+        font-size: 12.5px;
+        font-weight: 600;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .fs-step-btn.active {
+        background: var(--accent);
+        color: #ffffff;
+        border-color: var(--accent);
+      }
+
+      .fs-step-panel {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 16px 20px;
+        display: grid;
+        grid-template-columns: 320px 1fr;
+        gap: 18px;
+      }
+
+      .fs-step-panel[hidden] {
+        display: none !important;
+      }
+
+      .fs-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .fs-stage {
+        background: #e5e5e2;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        overflow: auto;
+        min-height: 360px;
+      }
+
+      .fs-stage canvas {
+        max-width: 100%;
+        height: auto;
+        background: #ffffff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.14);
+        display: block;
+      }
+
+      #fsAlignCanvas {
+        touch-action: none;
+        cursor: grab;
+      }
+
+      .fs-glyphs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+        gap: 8px;
+        width: 100%;
+        align-content: start;
+      }
+
+      .fs-glyph-card {
+        appearance: none;
+        border: 1px solid var(--border-strong);
+        background: #ffffff;
+        border-radius: 6px;
+        padding: 5px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+
+      .fs-glyph-card:hover {
+        border-color: var(--accent);
+      }
+
+      .fs-glyph-card.selected {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 2px var(--accent-soft);
+      }
+
+      .fs-glyph-card.empty {
+        opacity: 0.55;
+        background: #fafaf9;
+      }
+
+      .fs-glyph-card-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+      }
+
+      .fs-touchup-box {
+        border: 1px solid var(--border-strong);
+        background: var(--surface);
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      #fsTouchupCanvas {
+        border: 1px solid var(--border-strong);
+        border-radius: 4px;
+        background: #ffffff;
+        touch-action: none;
+        cursor: crosshair;
+        align-self: center;
+      }
+
+      .fs-live-sample-box {
+        width: 100%;
+        min-height: 76px;
+        padding: 12px 14px;
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-sm);
+        background: #ffffff;
+        color: #1b3b8a;
+        font-size: 28px;
+        line-height: 1.35;
+        outline: none;
+      }
+
+      @media (max-width: 960px) {
+        .fs-step-panel {
+          grid-template-columns: 1fr;
+        }
+      }
+
       /* Responsive Mobile / Tablet Layout */
       @media (max-width: 960px) {
         .app-header {
-          padding: 0 12px;
-          gap: 10px;
+          padding: 8px 12px;
+          gap: 8px;
+          height: auto;
+          min-height: 52px;
+          flex-wrap: wrap;
         }
 
         .header-meta {
@@ -1540,6 +1708,7 @@
       </div>
       <div class="header-actions">
         <span id="headerMeta" class="header-meta">1 page · A4 · 2480 × 3508 px</span>
+        <button id="headerFontStudioBtn" type="button" class="btn-secondary btn-sm">Create My Font</button>
         <button id="openBulkBtn" type="button" class="btn-secondary btn-sm">Bulk Mode</button>
         <button id="generateBtn" type="button" class="btn-primary">
           Generate Image
@@ -1561,7 +1730,11 @@
         <section class="control-section" data-tab="style">
           <div class="section-header">
             <label id="fontLabel" class="section-title">Select Handwriting</label>
-            <button type="button" id="uploadFontBtn" class="text-link-btn">Upload my handwriting font</button>
+            <div class="text-quick-actions">
+              <button type="button" id="openFontStudioBtn" class="text-link-btn">Create from paper</button>
+              <span class="meta-sep" aria-hidden="true">·</span>
+              <button type="button" id="uploadFontBtn" class="text-link-btn">Upload font</button>
+            </div>
             <input type="file" id="fontFileInput" accept=".ttf,.otf,.woff,.woff2" hidden />
           </div>
           <div class="custom-select" id="fontDropdown">
@@ -2653,6 +2826,140 @@
       </div>
     </div>
 
+    <!-- Inbuilt Handwriting Font Maker Studio Modal (.otf from Paper Photo) -->
+    <div id="fontStudioModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="fsModalTitle" hidden>
+      <div class="modal-shell font-studio-shell">
+        <div class="modal-header">
+          <div>
+            <h2 id="fsModalTitle" class="modal-title">Create My Handwriting Font (.otf)</h2>
+            <p class="modal-subtitle">Write on the template sheet, snap a photo, and convert your handwriting into a real font right here.</p>
+          </div>
+          <button type="button" id="closeFontStudioBtn" class="icon-close-btn" aria-label="Close font maker">✕</button>
+        </div>
+
+        <div class="fs-steps-bar" role="tablist">
+          <button type="button" class="fs-step-btn active" data-fsstep="1">1. Sheet &amp; Example</button>
+          <button type="button" class="fs-step-btn" data-fsstep="2">2. Upload Photo &amp; Align</button>
+          <button type="button" class="fs-step-btn" data-fsstep="3">3. Review &amp; Save .otf</button>
+        </div>
+
+        <!-- Step 1: Download / Print Template + View Filled Example -->
+        <div id="fsStepPanel1" class="fs-step-panel">
+          <div class="fs-sidebar">
+            <div class="field-group">
+              <label for="fsSheetSetSelect" class="sub-label">Template Character Set</label>
+              <select id="fsSheetSetSelect" class="native-select">
+                <option value="essential">Essential (71 chars: A–Z, a–z, 0–9, punctuation)</option>
+                <option value="extended">Extended (86 chars: includes math &amp; symbols)</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <span class="sub-label">Preview Mode</span>
+              <div class="seg-group">
+                <button type="button" id="fsShowBlankBtn" class="seg-btn active">Blank Sheet</button>
+                <button type="button" id="fsShowExampleBtn" class="seg-btn">Filled Example</button>
+              </div>
+            </div>
+
+            <div class="calib-card">
+              <div class="calib-card-title">How to write on the sheet</div>
+              <p class="calib-status" style="margin:0;line-height:1.5;">
+                1. Download &amp; print the sheet (or copy the grid onto plain paper).<br />
+                2. Write each letter inside its box resting on the faint blue baseline.<br />
+                3. Use dark black or dark blue pen; avoid touching the top character label.<br />
+                4. Snap a bright, flat photo showing all 4 black corner squares.
+              </p>
+            </div>
+
+            <button type="button" id="fsDownloadSheetPdfBtn" class="btn-primary">Download Printable Sheet (PDF)</button>
+            <button type="button" id="fsDownloadSheetPngBtn" class="btn-secondary">Download Sheet Image (PNG)</button>
+            <button type="button" id="fsGoStep2Btn" class="btn-secondary">I Already Wrote My Sheet → Next</button>
+          </div>
+          <div class="fs-stage">
+            <canvas id="fsTemplatePreviewCanvas" width="1240" height="1754"></canvas>
+          </div>
+        </div>
+
+        <!-- Step 2: Upload Photo & Align 4 Corner Markers -->
+        <div id="fsStepPanel2" class="fs-step-panel" hidden>
+          <div class="fs-sidebar">
+            <button type="button" id="fsPickPhotoBtn" class="btn-primary">Upload Sheet Photo (JPG / PNG / HEIC)</button>
+            <input type="file" id="fsPhotoFileInput" accept="image/*" hidden />
+            <button type="button" id="fsTryDemoPhotoBtn" class="btn-secondary">Try Demo Filled Photo</button>
+
+            <div class="calib-card">
+              <div class="calib-card-title">Grid Alignment</div>
+              <p id="fsAlignStatus" class="calib-status" style="margin:0;">Upload a photo of your filled sheet, or click "Try Demo Filled Photo" to test immediately.</p>
+            </div>
+
+            <div class="field-group">
+              <div class="field-label-row">
+                <label for="fsThresholdInput" class="sub-label">Ink Sensitivity</label>
+                <span id="fsThresholdVal" class="field-val">72%</span>
+              </div>
+              <input id="fsThresholdInput" type="range" min="45" max="90" step="1" value="72" />
+            </div>
+
+            <label class="toggle-row" for="fsFilterBlueInput">
+              <span class="toggle-copy">
+                <span class="toggle-title">Ignore blue guide lines</span>
+                <span class="toggle-desc">Automatically removes cyan grid &amp; baseline marks</span>
+              </span>
+              <input id="fsFilterBlueInput" type="checkbox" class="toggle-check" checked />
+            </label>
+
+            <button type="button" id="fsRedetectCornersBtn" class="btn-secondary" disabled>Re-Detect 4 Corners</button>
+            <button type="button" id="fsExtractGlyphsBtn" class="btn-primary" disabled>Convert Photo to Font →</button>
+          </div>
+          <div class="fs-stage">
+            <canvas id="fsAlignCanvas" width="900" height="1100"></canvas>
+          </div>
+        </div>
+
+        <!-- Step 3: Review Extracted Glyphs, Touch Up & Download / Save .otf -->
+        <div id="fsStepPanel3" class="fs-step-panel" hidden>
+          <div class="fs-sidebar">
+            <div class="field-group">
+              <label for="fsFontNameInput" class="sub-label">Handwriting Font Name</label>
+              <input id="fsFontNameInput" type="text" class="text-field" maxlength="38" value="My Paper Handwriting" />
+            </div>
+
+            <div class="fs-touchup-box" id="fsTouchupBox" hidden>
+              <div class="section-header">
+                <span class="sub-label">Edit Glyph: <strong id="fsTouchupCharLabel">A</strong></span>
+                <div class="text-quick-actions">
+                  <button type="button" id="fsTouchupEraserBtn" class="text-link-btn">Pen / Eraser</button>
+                  <span class="meta-sep">·</span>
+                  <button type="button" id="fsTouchupClearBtn" class="text-link-btn text-danger">Clear</button>
+                </div>
+              </div>
+              <canvas id="fsTouchupCanvas" width="220" height="240"></canvas>
+              <div class="field-group">
+                <div class="field-label-row">
+                  <label for="fsGlyphBaselineInput" class="sub-label">Baseline Nudge</label>
+                  <span id="fsGlyphBaselineVal" class="field-val">0</span>
+                </div>
+                <input id="fsGlyphBaselineInput" type="range" min="-140" max="140" step="10" value="0" />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="fsTestSentenceInput" class="sub-label">Live Font Preview (type to test)</label>
+              <div id="fsLiveSampleBox" class="fs-live-sample-box" contenteditable="true" spellcheck="false">The quick brown fox jumps over 123 lazy dogs!</div>
+            </div>
+
+            <p id="fsBuildStatus" class="calib-status" style="margin:0;"></p>
+            <button type="button" id="fsSaveAndUseBtn" class="btn-primary" disabled>Save &amp; Use in HandScript</button>
+            <button type="button" id="fsDownloadOtfBtn" class="btn-secondary" disabled>Download Font File (.otf)</button>
+          </div>
+          <div class="fs-stage">
+            <div id="fsGlyphsGrid" class="fs-glyphs-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <script src="./vendor/jspdf.umd.min.js"></script>
     <script type="module">
       // HandScript — Offline Text-to-Handwriting Engine + Real Paper Calibration + Phone Photo Export
@@ -3133,6 +3440,44 @@ Next steps for tomorrow's studio session:
         bulkProgressText: document.getElementById('bulkProgressText'),
         bulkExportPdfsBtn: document.getElementById('bulkExportPdfsBtn'),
         bulkExportZipBtn: document.getElementById('bulkExportZipBtn'),
+
+        headerFontStudioBtn: document.getElementById('headerFontStudioBtn'),
+        openFontStudioBtn: document.getElementById('openFontStudioBtn'),
+        fontStudioModal: document.getElementById('fontStudioModal'),
+        closeFontStudioBtn: document.getElementById('closeFontStudioBtn'),
+        fsSheetSetSelect: document.getElementById('fsSheetSetSelect'),
+        fsShowBlankBtn: document.getElementById('fsShowBlankBtn'),
+        fsShowExampleBtn: document.getElementById('fsShowExampleBtn'),
+        fsDownloadSheetPdfBtn: document.getElementById('fsDownloadSheetPdfBtn'),
+        fsDownloadSheetPngBtn: document.getElementById('fsDownloadSheetPngBtn'),
+        fsGoStep2Btn: document.getElementById('fsGoStep2Btn'),
+        fsTemplatePreviewCanvas: document.getElementById('fsTemplatePreviewCanvas'),
+        fsPickPhotoBtn: document.getElementById('fsPickPhotoBtn'),
+        fsPhotoFileInput: document.getElementById('fsPhotoFileInput'),
+        fsTryDemoPhotoBtn: document.getElementById('fsTryDemoPhotoBtn'),
+        fsAlignStatus: document.getElementById('fsAlignStatus'),
+        fsThresholdInput: document.getElementById('fsThresholdInput'),
+        fsThresholdVal: document.getElementById('fsThresholdVal'),
+        fsFilterBlueInput: document.getElementById('fsFilterBlueInput'),
+        fsRedetectCornersBtn: document.getElementById('fsRedetectCornersBtn'),
+        fsExtractGlyphsBtn: document.getElementById('fsExtractGlyphsBtn'),
+        fsAlignCanvas: document.getElementById('fsAlignCanvas'),
+        fsFontNameInput: document.getElementById('fsFontNameInput'),
+        fsTouchupBox: document.getElementById('fsTouchupBox'),
+        fsTouchupCharLabel: document.getElementById('fsTouchupCharLabel'),
+        fsTouchupEraserBtn: document.getElementById('fsTouchupEraserBtn'),
+        fsTouchupClearBtn: document.getElementById('fsTouchupClearBtn'),
+        fsTouchupCanvas: document.getElementById('fsTouchupCanvas'),
+        fsGlyphBaselineInput: document.getElementById('fsGlyphBaselineInput'),
+        fsGlyphBaselineVal: document.getElementById('fsGlyphBaselineVal'),
+        fsLiveSampleBox: document.getElementById('fsLiveSampleBox'),
+        fsBuildStatus: document.getElementById('fsBuildStatus'),
+        fsSaveAndUseBtn: document.getElementById('fsSaveAndUseBtn'),
+        fsDownloadOtfBtn: document.getElementById('fsDownloadOtfBtn'),
+        fsGlyphsGrid: document.getElementById('fsGlyphsGrid'),
+        fsStepPanel1: document.getElementById('fsStepPanel1'),
+        fsStepPanel2: document.getElementById('fsStepPanel2'),
+        fsStepPanel3: document.getElementById('fsStepPanel3'),
       };
 
       // Non-blocking error/status toast
@@ -3431,6 +3776,12 @@ Next steps for tomorrow's studio session:
         if (window.Tesseract) return window.Tesseract;
         await loadClassicScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
         return window.Tesseract;
+      }
+
+      async function getOpentypeLib() {
+        if (window.opentype) return window.opentype;
+        await loadClassicScript('https://cdn.jsdelivr.net/npm/opentype.js@1.3.4/dist/opentype.min.js');
+        return window.opentype;
       }
 
       function measureFontOpticalScale(fontName) {
@@ -9872,6 +10223,1228 @@ Next steps for tomorrow's studio session:
             if (!dom.diagramModal.hidden) dom.diagramModal.hidden = true;
             if (!dom.importOcrModal.hidden) dom.importOcrModal.hidden = true;
             if (!dom.bulkModal.hidden) dom.bulkModal.hidden = true;
+            if (!dom.fontStudioModal.hidden) dom.fontStudioModal.hidden = true;
+          }
+        });
+
+        setupFontStudio();
+      }
+
+      // ---------------------------------------------------------------------------
+      // Inbuilt Handwriting Font Maker Studio (.otf Generator from Paper Sheet)
+      // ---------------------------------------------------------------------------
+      function setupFontStudio() {
+        const FS_W = 1240;
+        const FS_H = 1754;
+        const FS_COLS = 9;
+        const FS_MARKERS = [
+          { x: 90, y: 170 },   // TL
+          { x: 1150, y: 170 }, // TR
+          { x: 90, y: 1664 },  // BL
+          { x: 1150, y: 1664 },// BR
+        ];
+        const FS_GRID = { left: 115, right: 1125, top: 205, bottom: 1630 };
+        const FS_CHARS_ESSENTIAL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?-\'"()'.split('');
+        const FS_CHARS_EXTENDED = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,!?-\'"():;/+=*&@#_$[]%~^'.split('');
+
+        const fsState = {
+          step: 1,
+          sheetSet: 'essential',
+          showExample: false,
+          photoImg: null,
+          corners: null, // [{x,y}, {x,y}, {x,y}, {x,y}] in photo coordinates
+          draggingIdx: -1,
+          glyphs: [], // { char, maskCanvas, loops, bounds, baselineNudge, advanceWidth }
+          selectedGlyphIdx: -1,
+          eraserMode: false,
+          otfBuffer: null,
+          previewFontFamily: 'HandScriptStudioPreview',
+          rebuildTimer: null,
+        };
+
+        const getChars = () => (fsState.sheetSet === 'extended' ? FS_CHARS_EXTENDED : FS_CHARS_ESSENTIAL);
+        const getRows = () => Math.ceil(getChars().length / FS_COLS);
+
+        function setFontStudioStep(stepNum) {
+          fsState.step = stepNum;
+          dom.fontStudioModal.querySelectorAll('.fs-step-btn').forEach((b) => {
+            b.classList.toggle('active', Number(b.dataset.fsstep) === stepNum);
+          });
+          dom.fsStepPanel1.hidden = stepNum !== 1;
+          dom.fsStepPanel2.hidden = stepNum !== 2;
+          dom.fsStepPanel3.hidden = stepNum !== 3;
+        }
+
+        function drawCornerMarker(ctx, cx, cy) {
+          ctx.fillStyle = '#111111';
+          ctx.fillRect(cx - 24, cy - 24, 48, 48);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(cx - 15, cy - 15, 30, 30);
+          ctx.fillStyle = '#111111';
+          ctx.fillRect(cx - 7, cy - 7, 14, 14);
+        }
+
+        function drawSheetToCanvas(targetCanvas, withExample = false) {
+          targetCanvas.width = FS_W;
+          targetCanvas.height = FS_H;
+          const ctx = targetCanvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, FS_W, FS_H);
+
+          // Title & instructions header
+          ctx.fillStyle = '#17191f';
+          ctx.font = '700 30px "Plus Jakarta Sans", sans-serif';
+          ctx.textBaseline = 'top';
+          ctx.fillText('HandScript — Handwriting Font Template', 120, 44);
+          ctx.fillStyle = '#575b66';
+          ctx.font = '400 18px "Plus Jakarta Sans", sans-serif';
+          ctx.fillText('Write neatly with dark pen resting on the blue baseline. Keep all 4 corner squares visible in your photo.', 120, 86);
+
+          // 4 fiducial corner markers
+          for (const m of FS_MARKERS) {
+            drawCornerMarker(ctx, m.x, m.y);
+          }
+
+          const chars = getChars();
+          const rows = getRows();
+          const gridW = FS_GRID.right - FS_GRID.left;
+          const gridH = FS_GRID.bottom - FS_GRID.top;
+          const cellW = gridW / FS_COLS;
+          const cellH = gridH / rows;
+
+          for (let i = 0; i < rows * FS_COLS; i++) {
+            const r = Math.floor(i / FS_COLS);
+            const c = i % FS_COLS;
+            const x = FS_GRID.left + c * cellW;
+            const y = FS_GRID.top + r * cellH;
+            const ch = chars[i] || '';
+
+            // Cyan border & header divider (ignored automatically by ink extractor)
+            ctx.strokeStyle = '#7dd3fc';
+            ctx.lineWidth = 1.6;
+            ctx.strokeRect(x, y, cellW, cellH);
+
+            const hdrH = cellH * 0.22;
+            ctx.fillStyle = '#f0f9ff';
+            ctx.fillRect(x + 1, y + 1, cellW - 2, hdrH - 1);
+            ctx.beginPath();
+            ctx.moveTo(x, y + hdrH);
+            ctx.lineTo(x + cellW, y + hdrH);
+            ctx.stroke();
+
+            // Subtle cap/x-height and baseline guides
+            const baseY = y + cellH * 0.74;
+            const xHeightY = y + cellH * 0.44;
+            ctx.save();
+            ctx.strokeStyle = '#93c5fd';
+            ctx.lineWidth = 1.2;
+            ctx.setLineDash([4, 4]);
+            ctx.beginPath();
+            ctx.moveTo(x + 6, xHeightY);
+            ctx.lineTo(x + cellW - 6, xHeightY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.strokeStyle = '#60a5fa';
+            ctx.lineWidth = 1.4;
+            ctx.beginPath();
+            ctx.moveTo(x + 6, baseY);
+            ctx.lineTo(x + cellW - 6, baseY);
+            ctx.stroke();
+            ctx.restore();
+
+            if (ch) {
+              ctx.fillStyle = '#475569';
+              ctx.font = '700 18px "JetBrains Mono", monospace';
+              ctx.textBaseline = 'middle';
+              ctx.fillText(ch, x + 8, y + hdrH * 0.52);
+
+              if (withExample) {
+                const rand = mulberry32(hashSeed(i + 1, ch.charCodeAt(0), 91, 7));
+                const fontSize = Math.min(cellW * 0.62, cellH * 0.48);
+                ctx.save();
+                ctx.fillStyle = '#141a24';
+                ctx.strokeStyle = '#141a24';
+                ctx.lineWidth = 1.4;
+                ctx.font = `400 ${fontSize}px "Patrick Hand", "Caveat", cursive`;
+                ctx.textBaseline = 'alphabetic';
+                const mw = ctx.measureText(ch).width;
+                const jx = (rand() - 0.5) * 4;
+                const jy = (rand() - 0.5) * 2;
+                const rot = (rand() - 0.5) * 0.05;
+                ctx.translate(x + cellW * 0.5 + jx, baseY + jy);
+                ctx.rotate(rot);
+                ctx.strokeText(ch, -mw * 0.5, 0);
+                ctx.fillText(ch, -mw * 0.5, 0);
+                ctx.restore();
+              }
+            }
+          }
+        }
+
+        function refreshTemplatePreview() {
+          drawSheetToCanvas(dom.fsTemplatePreviewCanvas, fsState.showExample);
+        }
+
+        // Detect 4 concentric square corner markers on a photo
+        function detectTemplateCorners(img) {
+          const natW = img.naturalWidth || img.width;
+          const natH = img.naturalHeight || img.height;
+          const scale = Math.min(1, 920 / Math.max(natW, natH));
+          const w = Math.max(80, Math.round(natW * scale));
+          const h = Math.max(80, Math.round(natH * scale));
+
+          const c = document.createElement('canvas');
+          c.width = w;
+          c.height = h;
+          const ctx = c.getContext('2d', { willReadFrequently: true });
+          ctx.drawImage(img, 0, 0, w, h);
+          const { data } = ctx.getImageData(0, 0, w, h);
+
+          const gray = new Float32Array(w * h);
+          for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+            gray[p] = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          }
+
+          // Integral image for fast adaptive threshold
+          const iw = w + 1;
+          const integ = new Float64Array(iw * (h + 1));
+          for (let y = 1; y <= h; y++) {
+            let rowSum = 0;
+            for (let x = 1; x <= w; x++) {
+              rowSum += gray[(y - 1) * w + (x - 1)];
+              integ[y * iw + x] = integ[(y - 1) * iw + x] + rowSum;
+            }
+          }
+
+          const dark = new Uint8Array(w * h);
+          const rad = 11;
+          for (let y = 0; y < h; y++) {
+            const y1 = Math.max(0, y - rad);
+            const y2 = Math.min(h, y + rad + 1);
+            for (let x = 0; x < w; x++) {
+              const x1 = Math.max(0, x - rad);
+              const x2 = Math.min(w, x + rad + 1);
+              const cnt = (x2 - x1) * (y2 - y1);
+              const sum = integ[y2 * iw + x2] - integ[y1 * iw + x2] - integ[y2 * iw + x1] + integ[y1 * iw + x1];
+              const mean = sum / cnt;
+              dark[y * w + x] = gray[y * w + x] < mean - 16 ? 1 : 0;
+            }
+          }
+
+          const visited = new Uint8Array(w * h);
+          const quads = [
+            { name: 'TL', x0: 2, y0: 2, x1: Math.floor(w * 0.42), y1: Math.floor(h * 0.36), best: null },
+            { name: 'TR', x0: Math.floor(w * 0.58), y0: 2, x1: w - 3, y1: Math.floor(h * 0.36), best: null },
+            { name: 'BL', x0: 2, y0: Math.floor(h * 0.64), x1: Math.floor(w * 0.42), y1: h - 3, best: null },
+            { name: 'BR', x0: Math.floor(w * 0.58), y0: Math.floor(h * 0.64), x1: w - 3, y1: h - 3, best: null },
+          ];
+
+          const qStack = new Int32Array(w * h);
+          for (const q of quads) {
+            let bestScore = 0;
+            for (let sy = q.y0; sy < q.y1; sy++) {
+              for (let sx = q.x0; sx < q.x1; sx++) {
+                const startP = sy * w + sx;
+                if (!dark[startP] || visited[startP]) continue;
+
+                let head = 0;
+                let tail = 0;
+                qStack[tail++] = startP;
+                visited[startP] = 1;
+                let minX = sx;
+                let maxX = sx;
+                let minY = sy;
+                let maxY = sy;
+                let count = 0;
+
+                while (head < tail) {
+                  const p = qStack[head++];
+                  const px = p % w;
+                  const py = (p - px) / w;
+                  count++;
+                  if (px < minX) minX = px;
+                  if (px > maxX) maxX = px;
+                  if (py < minY) minY = py;
+                  if (py > maxY) maxY = py;
+
+                  const nbs = [p - 1, p + 1, p - w, p + w];
+                  for (const np of nbs) {
+                    if (np < 0 || np >= w * h) continue;
+                    const nx = np % w;
+                    if (Math.abs(nx - px) > 1) continue;
+                    if (dark[np] && !visited[np]) {
+                      visited[np] = 1;
+                      qStack[tail++] = np;
+                    }
+                  }
+                }
+
+                const bw = maxX - minX + 1;
+                const bh = maxY - minY + 1;
+                if (bw < 14 || bh < 14 || bw > 110 || bh > 110) continue;
+                const aspect = bw / bh;
+                if (aspect < 0.62 || aspect > 1.62) continue;
+                if (count < bw * bh * 0.25) continue;
+
+                // Score concentric pattern: dark center, white inner ring, dark outer corners
+                const cx = Math.round((minX + maxX) * 0.5);
+                const cy = Math.round((minY + maxY) * 0.5);
+                const centerDark = dark[cy * w + cx] === 1 ? 1 : 0;
+                if (!centerDark) continue;
+
+                const rWhite = Math.max(3, Math.round(Math.min(bw, bh) * 0.26));
+                const ringOffsets = [
+                  [rWhite, 0], [-rWhite, 0], [0, rWhite], [0, -rWhite],
+                ];
+                let whiteHits = 0;
+                for (const [ox, oy] of ringOffsets) {
+                  const rx = Math.max(0, Math.min(w - 1, cx + ox));
+                  const ry = Math.max(0, Math.min(h - 1, cy + oy));
+                  if (dark[ry * w + rx] === 0) whiteHits++;
+                }
+
+                const rOuter = Math.max(5, Math.round(Math.min(bw, bh) * 0.42));
+                const outerOffsets = [
+                  [rOuter, 0], [-rOuter, 0], [0, rOuter], [0, -rOuter],
+                ];
+                let outerHits = 0;
+                for (const [ox, oy] of outerOffsets) {
+                  const rx = Math.max(0, Math.min(w - 1, cx + ox));
+                  const ry = Math.max(0, Math.min(h - 1, cy + oy));
+                  if (dark[ry * w + rx] === 1) outerHits++;
+                }
+
+                const score = (whiteHits / 4) * 0.5 + (outerHits / 4) * 0.5 - Math.abs(1 - aspect) * 0.15;
+                if (score > bestScore && whiteHits >= 3 && outerHits >= 3) {
+                  bestScore = score;
+                  q.best = { x: cx / scale, y: cy / scale, score };
+                }
+              }
+            }
+          }
+
+          const detectedCount = quads.filter((q) => q.best !== null).length;
+          const defaults = [
+            { x: natW * (FS_MARKERS[0].x / FS_W), y: natH * (FS_MARKERS[0].y / FS_H) },
+            { x: natW * (FS_MARKERS[1].x / FS_W), y: natH * (FS_MARKERS[1].y / FS_H) },
+            { x: natW * (FS_MARKERS[2].x / FS_W), y: natH * (FS_MARKERS[2].y / FS_H) },
+            { x: natW * (FS_MARKERS[3].x / FS_W), y: natH * (FS_MARKERS[3].y / FS_H) },
+          ];
+          const corners = quads.map((q, idx) => (q.best ? { x: q.best.x, y: q.best.y } : defaults[idx]));
+          return { corners, detectedCount };
+        }
+
+        function renderAlignCanvas() {
+          const canvas = dom.fsAlignCanvas;
+          const ctx = canvas.getContext('2d');
+          if (!fsState.photoImg) {
+            canvas.width = 760;
+            canvas.height = 460;
+            ctx.fillStyle = '#fafaf9';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#767a84';
+            ctx.font = '500 15px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Upload a photo of your template sheet or click "Try Demo Filled Photo".', canvas.width * 0.5, canvas.height * 0.5);
+            return;
+          }
+
+          const img = fsState.photoImg;
+          const natW = img.naturalWidth || img.width;
+          const natH = img.naturalHeight || img.height;
+          const scale = Math.min(1, 900 / Math.max(natW, natH));
+          canvas.width = Math.round(natW * scale);
+          canvas.height = Math.round(natH * scale);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          if (!fsState.corners) return;
+          const pts = fsState.corners.map((p) => ({ x: p.x * scale, y: p.y * scale }));
+
+          // Draw quad connecting the 4 markers: TL -> TR -> BR -> BL
+          ctx.save();
+          ctx.strokeStyle = '#1d4ed8';
+          ctx.lineWidth = 2.4;
+          ctx.beginPath();
+          ctx.moveTo(pts[0].x, pts[0].y);
+          ctx.lineTo(pts[1].x, pts[1].y);
+          ctx.lineTo(pts[3].x, pts[3].y);
+          ctx.lineTo(pts[2].x, pts[2].y);
+          ctx.closePath();
+          ctx.stroke();
+
+          const labels = ['TL', 'TR', 'BL', 'BR'];
+          pts.forEach((p, idx) => {
+            ctx.fillStyle = fsState.draggingIdx === idx ? '#ef4444' : '#1d4ed8';
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 11, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '700 9px "JetBrains Mono", monospace';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(labels[idx], p.x, p.y + 0.5);
+          });
+          ctx.restore();
+        }
+
+        // Solve 3x3 perspective homography mapping dst (template) -> src (photo)
+        function computeHomography(dstPts, srcPts) {
+          const A = [];
+          const b = [];
+          for (let i = 0; i < 4; i++) {
+            const dx = dstPts[i].x;
+            const dy = dstPts[i].y;
+            const sx = srcPts[i].x;
+            const sy = srcPts[i].y;
+            A.push([dx, dy, 1, 0, 0, 0, -sx * dx, -sx * dy]);
+            b.push(sx);
+            A.push([0, 0, 0, dx, dy, 1, -sy * dx, -sy * dy]);
+            b.push(sy);
+          }
+          // Gaussian elimination
+          const n = 8;
+          for (let col = 0; col < n; col++) {
+            let maxRow = col;
+            for (let r = col + 1; r < n; r++) {
+              if (Math.abs(A[r][col]) > Math.abs(A[maxRow][col])) maxRow = r;
+            }
+            [A[col], A[maxRow]] = [A[maxRow], A[col]];
+            [b[col], b[maxRow]] = [b[maxRow], b[col]];
+            const piv = A[col][col] || 1e-9;
+            for (let r = col + 1; r < n; r++) {
+              const f = A[r][col] / piv;
+              for (let k = col; k < n; k++) A[r][k] -= f * A[col][k];
+              b[r] -= f * b[col];
+            }
+          }
+          const h = new Array(n).fill(0);
+          for (let r = n - 1; r >= 0; r--) {
+            let s = b[r];
+            for (let k = r + 1; k < n; k++) s -= A[r][k] * h[k];
+            h[r] = s / (A[r][r] || 1e-9);
+          }
+          return [...h, 1];
+        }
+
+        function warpSheetToRectifiedCanvas(img, corners) {
+          const natW = img.naturalWidth || img.width;
+          const natH = img.naturalHeight || img.height;
+          const srcC = document.createElement('canvas');
+          srcC.width = natW;
+          srcC.height = natH;
+          const sctx = srcC.getContext('2d', { willReadFrequently: true });
+          sctx.drawImage(img, 0, 0);
+          const srcData = sctx.getImageData(0, 0, natW, natH).data;
+
+          const H = computeHomography(FS_MARKERS, corners);
+          const dstC = document.createElement('canvas');
+          dstC.width = FS_W;
+          dstC.height = FS_H;
+          const dctx = dstC.getContext('2d', { willReadFrequently: true });
+          const dstImg = dctx.createImageData(FS_W, FS_H);
+          const dd = dstImg.data;
+
+          for (let v = 0; v < FS_H; v++) {
+            for (let u = 0; u < FS_W; u++) {
+              const denom = H[6] * u + H[7] * v + H[8];
+              const sx = (H[0] * u + H[1] * v + H[2]) / denom;
+              const sy = (H[3] * u + H[4] * v + H[5]) / denom;
+              const x0 = Math.floor(sx);
+              const y0 = Math.floor(sy);
+              const outP = (v * FS_W + u) * 4;
+              if (x0 < 0 || x0 >= natW - 1 || y0 < 0 || y0 >= natH - 1) {
+                dd[outP] = 255;
+                dd[outP + 1] = 255;
+                dd[outP + 2] = 255;
+                dd[outP + 3] = 255;
+                continue;
+              }
+              const fx = sx - x0;
+              const fy = sy - y0;
+              const p00 = (y0 * natW + x0) * 4;
+              const p10 = p00 + 4;
+              const p01 = p00 + natW * 4;
+              const p11 = p01 + 4;
+              const w00 = (1 - fx) * (1 - fy);
+              const w10 = fx * (1 - fy);
+              const w01 = (1 - fx) * fy;
+              const w11 = fx * fy;
+              dd[outP] = srcData[p00] * w00 + srcData[p10] * w10 + srcData[p01] * w01 + srcData[p11] * w11;
+              dd[outP + 1] = srcData[p00 + 1] * w00 + srcData[p10 + 1] * w10 + srcData[p01 + 1] * w01 + srcData[p11 + 1] * w11;
+              dd[outP + 2] = srcData[p00 + 2] * w00 + srcData[p10 + 2] * w10 + srcData[p01 + 2] * w01 + srcData[p11 + 2] * w11;
+              dd[outP + 3] = 255;
+            }
+          }
+          dctx.putImageData(dstImg, 0, 0);
+          return dstC;
+        }
+
+        // Exact pixel-boundary directed edge loop contour tracer (guarantees clean outer + hole winding)
+        function rdpSimplify(pts, eps) {
+          if (pts.length <= 3) return pts;
+          const keep = new Uint8Array(pts.length);
+          keep[0] = 1;
+          keep[pts.length - 1] = 1;
+          const stack = [[0, pts.length - 1]];
+          while (stack.length > 0) {
+            const [s, e] = stack.pop();
+            let maxD = 0;
+            let idx = -1;
+            const x1 = pts[s][0], y1 = pts[s][1];
+            const x2 = pts[e][0], y2 = pts[e][1];
+            const dx = x2 - x1, dy = y2 - y1;
+            const len = Math.hypot(dx, dy) || 1;
+            for (let i = s + 1; i < e; i++) {
+              const d = Math.abs(dy * pts[i][0] - dx * pts[i][1] + x2 * y1 - y2 * x1) / len;
+              if (d > maxD) {
+                maxD = d;
+                idx = i;
+              }
+            }
+            if (maxD > eps && idx !== -1) {
+              keep[idx] = 1;
+              stack.push([s, idx], [idx, e]);
+            }
+          }
+          const out = [];
+          for (let i = 0; i < pts.length; i++) if (keep[i]) out.push(pts[i]);
+          return out;
+        }
+
+        function rdpSimplifyClosed(clean, eps) {
+          if (clean.length <= 4) return clean;
+          let farIdx = 0;
+          let maxDistSq = -1;
+          const p0 = clean[0];
+          for (let i = 1; i < clean.length; i++) {
+            const dx = clean[i][0] - p0[0];
+            const dy = clean[i][1] - p0[1];
+            const d2 = dx * dx + dy * dy;
+            if (d2 > maxDistSq) {
+              maxDistSq = d2;
+              farIdx = i;
+            }
+          }
+          if (farIdx === 0) return clean;
+          const part1 = rdpSimplify(clean.slice(0, farIdx + 1), eps);
+          const part2 = rdpSimplify([...clean.slice(farIdx), p0], eps);
+          return [...part1.slice(0, -1), ...part2.slice(0, -1)];
+        }
+
+        function traceMaskToLoops(mask, w, h) {
+          // Build directed boundary segments keeping foreground pixel on the RIGHT (CW outer in Y-down)
+          // Each edge keyed by start vertex (vx, vy) -> list of { tx, ty, dir }
+          // dir: 0=R(+1,0), 1=D(0,+1), 2=L(-1,0), 3=U(0,-1)
+          const edgeMap = new Map();
+          const addEdge = (x1, y1, x2, y2, dir) => {
+            const k = `${x1},${y1}`;
+            let arr = edgeMap.get(k);
+            if (!arr) {
+              arr = [];
+              edgeMap.set(k, arr);
+            }
+            arr.push({ x2, y2, dir, used: false });
+          };
+
+          for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+              if (!mask[y * w + x]) continue;
+              if (y === 0 || !mask[(y - 1) * w + x]) addEdge(x, y, x + 1, y, 0);
+              if (x === w - 1 || !mask[y * w + x + 1]) addEdge(x + 1, y, x + 1, y + 1, 1);
+              if (y === h - 1 || !mask[(y + 1) * w + x]) addEdge(x + 1, y + 1, x, y + 1, 2);
+              if (x === 0 || !mask[y * w + x - 1]) addEdge(x, y + 1, x, y, 3);
+            }
+          }
+
+          const loops = [];
+          for (const [startKey, list] of edgeMap.entries()) {
+            for (const firstEdge of list) {
+              if (firstEdge.used) continue;
+              const poly = [];
+              let [cx, cy] = startKey.split(',').map(Number);
+              let edge = firstEdge;
+              let guard = 0;
+              while (edge && !edge.used && guard++ < w * h * 4) {
+                edge.used = true;
+                poly.push([cx, cy]);
+                const prevDir = edge.dir;
+                cx = edge.x2;
+                cy = edge.y2;
+                const nextList = edgeMap.get(`${cx},${cy}`);
+                if (!nextList) break;
+                const avail = nextList.filter((e) => !e.used);
+                if (avail.length === 0) break;
+                // Prefer right turn (keeping foreground on right) to avoid self-crossing at checkerboards
+                const rightTurn = (prevDir + 1) % 4;
+                const straight = prevDir;
+                edge =
+                  avail.find((e) => e.dir === rightTurn) ||
+                  avail.find((e) => e.dir === straight) ||
+                  avail[0];
+              }
+              if (poly.length < 4) continue;
+
+              // Collapse collinear mid-points
+              const clean = [];
+              for (let i = 0; i < poly.length; i++) {
+                const pPrev = poly[(i - 1 + poly.length) % poly.length];
+                const pCur = poly[i];
+                const pNext = poly[(i + 1) % poly.length];
+                const dx1 = pCur[0] - pPrev[0];
+                const dy1 = pCur[1] - pPrev[1];
+                const dx2 = pNext[0] - pCur[0];
+                const dy2 = pNext[1] - pCur[1];
+                if (dx1 * dy2 !== dy1 * dx2) clean.push(pCur);
+              }
+              if (clean.length < 3) continue;
+
+              // Signed area in Y-down
+              let area2 = 0;
+              for (let i = 0; i < clean.length; i++) {
+                const a = clean[i];
+                const b = clean[(i + 1) % clean.length];
+                area2 += a[0] * b[1] - b[0] * a[1];
+              }
+              if (Math.abs(area2) * 0.5 < 14) continue;
+
+              const simp = rdpSimplifyClosed(clean, 1.35);
+              if (simp.length >= 3) loops.push(simp);
+            }
+          }
+          return loops;
+        }
+
+        function vectorizeMaskCanvas(maskCanvas, baselineLocalY) {
+          const w = maskCanvas.width;
+          const h = maskCanvas.height;
+          const { data } = maskCanvas.getContext('2d', { willReadFrequently: true }).getImageData(0, 0, w, h);
+          const mask = new Uint8Array(w * h);
+          let minX = w, maxX = -1, minY = h, maxY = -1;
+          for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+              const p = (y * w + x) * 4;
+              if (data[p + 3] > 128 && data[p] < 160) {
+                mask[y * w + x] = 1;
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+              }
+            }
+          }
+          if (maxX < minX) {
+            return { loops: [], bounds: null, baselineLocalY };
+          }
+          const loops = traceMaskToLoops(mask, w, h);
+          return {
+            loops,
+            bounds: { minX, maxX, minY, maxY },
+            baselineLocalY,
+          };
+        }
+
+        function extractCellInkCanvas(rectCanvas, cellRect, thresholdPct, filterBlue) {
+          const padX = cellRect.w * 0.06;
+          const topSkip = cellRect.h * 0.24;
+          const botLimit = cellRect.h * 0.94;
+          const sx = Math.round(cellRect.x + padX);
+          const sy = Math.round(cellRect.y + topSkip);
+          const sw = Math.max(20, Math.round(cellRect.w - padX * 2));
+          const sh = Math.max(20, Math.round(botLimit - topSkip));
+
+          const upW = Math.round(sw * 2);
+          const upH = Math.round(sh * 2);
+          const c = document.createElement('canvas');
+          c.width = upW;
+          c.height = upH;
+          const ctx = c.getContext('2d', { willReadFrequently: true });
+          ctx.drawImage(rectCanvas, sx, sy, sw, sh, 0, 0, upW, upH);
+
+          const img = ctx.getImageData(0, 0, upW, upH);
+          const d = img.data;
+          const lumas = new Uint8Array(upW * upH);
+          const hist = new Uint32Array(256);
+          for (let i = 0, p = 0; i < d.length; i += 4, p++) {
+            const l = Math.min(255, Math.round(0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]));
+            lumas[p] = l;
+            hist[l]++;
+          }
+          // 80th percentile paper brightness
+          let acc = 0;
+          const target = Math.floor(upW * upH * 0.8);
+          let bgLuma = 240;
+          for (let v = 0; v < 256; v++) {
+            acc += hist[v];
+            if (acc >= target) {
+              bgLuma = Math.max(110, v);
+              break;
+            }
+          }
+
+          const ratio = thresholdPct / 100;
+          const thresh = Math.min(bgLuma - 18, Math.round(bgLuma * ratio));
+          const rawMask = new Uint8Array(upW * upH);
+          for (let i = 0, p = 0; i < d.length; i += 4, p++) {
+            const r = d[i], g = d[i + 1], b = d[i + 2];
+            if (filterBlue && b - r > 20 && lumas[p] > 115) continue;
+            if (lumas[p] < thresh) rawMask[p] = 1;
+          }
+
+          // Remove small isolated noise blobs (< 10 px at 2x scale)
+          const vis = new Uint8Array(upW * upH);
+          const comp = [];
+          const q = new Int32Array(upW * upH);
+          for (let p = 0; p < upW * upH; p++) {
+            if (!rawMask[p] || vis[p]) continue;
+            let head = 0, tail = 0;
+            q[tail++] = p;
+            vis[p] = 1;
+            comp.length = 0;
+            while (head < tail) {
+              const cur = q[head++];
+              comp.push(cur);
+              const cx = cur % upW;
+              const nbs = [cur - 1, cur + 1, cur - upW, cur + upW];
+              for (const np of nbs) {
+                if (np < 0 || np >= upW * upH) continue;
+                if (Math.abs((np % upW) - cx) > 1) continue;
+                if (rawMask[np] && !vis[np]) {
+                  vis[np] = 1;
+                  q[tail++] = np;
+                }
+              }
+            }
+            if (comp.length < 10) {
+              for (const cp of comp) rawMask[cp] = 0;
+            }
+          }
+
+          for (let i = 0, p = 0; i < d.length; i += 4, p++) {
+            if (rawMask[p]) {
+              d[i] = 18; d[i + 1] = 20; d[i + 2] = 26; d[i + 3] = 255;
+            } else {
+              d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; d[i + 3] = 0;
+            }
+          }
+          ctx.putImageData(img, 0, 0);
+          const baselineLocalY = ((cellRect.h * 0.74 - topSkip) / sh) * upH;
+          return { maskCanvas: c, baselineLocalY };
+        }
+
+        function buildOpentypeBufferFromGlyphs(fontTitle) {
+          const ot = window.opentype;
+          if (!ot) throw new Error('Font compiler library not loaded yet.');
+          const chars = getChars();
+          const rows = getRows();
+          const cellH = (FS_GRID.bottom - FS_GRID.top) / rows;
+          const writingSpanH = cellH * (0.94 - 0.24) * 2;
+          // 0.50 * cellH above baseline maps to ~740 font units
+          const unitScale = 740 / (writingSpanH * (0.50 / 0.70));
+
+          const otGlyphs = [
+            new ot.Glyph({
+              name: '.notdef',
+              unicode: 0,
+              advanceWidth: 500,
+              path: new ot.Path(),
+            }),
+            new ot.Glyph({
+              name: 'space',
+              unicode: 32,
+              advanceWidth: 340,
+              path: new ot.Path(),
+            }),
+          ];
+
+          for (let i = 0; i < fsState.glyphs.length; i++) {
+            const g = fsState.glyphs[i];
+            if (!g || !g.bounds || g.loops.length === 0) continue;
+            const path = new ot.Path();
+            const lsb = 52;
+            const inkW = g.bounds.maxX - g.bounds.minX;
+            const advW = Math.max(220, Math.round(inkW * unitScale + lsb * 2));
+
+            for (const poly of g.loops) {
+              if (poly.length < 3) continue;
+              const mapPt = (pt) => [
+                Math.round((pt[0] - g.bounds.minX) * unitScale + lsb),
+                Math.round((g.baselineLocalY - pt[1]) * unitScale + (g.baselineNudge || 0)),
+              ];
+              const mapped = poly.map(mapPt);
+              const n = mapped.length;
+              const mid = (a, b) => [(a[0] + b[0]) * 0.5, (a[1] + b[1]) * 0.5];
+
+              let prevEnd = mid(mapped[n - 1], mapped[0]);
+              path.moveTo(prevEnd[0], prevEnd[1]);
+              for (let k = 0; k < n; k++) {
+                const ctrl = mapped[k];
+                const end = mid(ctrl, mapped[(k + 1) % n]);
+                // Degree-elevate quadratic Bezier (prevEnd, ctrl, end) -> cubic CFF curveTo
+                const c1x = Math.round(prevEnd[0] + (2 / 3) * (ctrl[0] - prevEnd[0]));
+                const c1y = Math.round(prevEnd[1] + (2 / 3) * (ctrl[1] - prevEnd[1]));
+                const c2x = Math.round(end[0] + (2 / 3) * (ctrl[0] - end[0]));
+                const c2y = Math.round(end[1] + (2 / 3) * (ctrl[1] - end[1]));
+                path.curveTo(c1x, c1y, c2x, c2y, Math.round(end[0]), Math.round(end[1]));
+                prevEnd = end;
+              }
+              path.close();
+            }
+
+            const code = g.char.charCodeAt(0);
+            otGlyphs.push(
+              new ot.Glyph({
+                name: `uni${code.toString(16).toUpperCase().padStart(4, '0')}`,
+                unicode: code,
+                advanceWidth: advW,
+                path,
+              })
+            );
+          }
+
+          const safeFamily = (fontTitle || 'MyHandwriting').replace(/[^a-zA-Z0-9 ]/g, '').trim() || 'MyHandwriting';
+          const font = new ot.Font({
+            familyName: safeFamily,
+            styleName: 'Regular',
+            unitsPerEm: 1000,
+            ascender: 800,
+            descender: -250,
+            glyphs: otGlyphs,
+          });
+          return font.toArrayBuffer();
+        }
+
+        async function rebuildOtfAndLiveSample() {
+          const validCount = fsState.glyphs.filter((g) => g.loops && g.loops.length > 0).length;
+          dom.fsBuildStatus.textContent = `Extracted ${validCount} of ${getChars().length} glyphs. Click any card to touch up.`;
+          if (validCount === 0) {
+            fsState.otfBuffer = null;
+            dom.fsSaveAndUseBtn.disabled = true;
+            dom.fsDownloadOtfBtn.disabled = true;
+            return;
+          }
+          try {
+            await getOpentypeLib();
+            const buf = buildOpentypeBufferFromGlyphs(dom.fsFontNameInput.value);
+            fsState.otfBuffer = buf;
+            dom.fsSaveAndUseBtn.disabled = false;
+            dom.fsDownloadOtfBtn.disabled = false;
+
+            // Load live into FontFace for the test box
+            const previewFam = `HandScriptStudioPreview_${Date.now()}`;
+            const ff = new FontFace(previewFam, buf.slice(0));
+            await ff.load();
+            document.fonts.add(ff);
+            dom.fsLiveSampleBox.style.fontFamily = `"${previewFam}", cursive`;
+          } catch (err) {
+            dom.fsBuildStatus.textContent = `Could not compile font: ${err.message}`;
+          }
+        }
+
+        function renderGlyphCardThumb(g, thumbCanvas) {
+          const ctx = thumbCanvas.getContext('2d');
+          ctx.clearRect(0, 0, thumbCanvas.width, thumbCanvas.height);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, thumbCanvas.width, thumbCanvas.height);
+
+          const baseNorm = g.baselineLocalY / g.maskCanvas.height;
+          ctx.strokeStyle = '#bfdbfe';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(4, Math.round(baseNorm * thumbCanvas.height));
+          ctx.lineTo(thumbCanvas.width - 4, Math.round(baseNorm * thumbCanvas.height));
+          ctx.stroke();
+
+          ctx.drawImage(g.maskCanvas, 0, 0, thumbCanvas.width, thumbCanvas.height);
+        }
+
+        function renderGlyphsGrid() {
+          dom.fsGlyphsGrid.innerHTML = '';
+          fsState.glyphs.forEach((g, idx) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            const isEmpty = !g.bounds || g.loops.length === 0;
+            btn.className = `fs-glyph-card${isEmpty ? ' empty' : ''}${fsState.selectedGlyphIdx === idx ? ' selected' : ''}`;
+            const tc = document.createElement('canvas');
+            tc.width = 62;
+            tc.height = 70;
+            renderGlyphCardThumb(g, tc);
+
+            const lbl = document.createElement('span');
+            lbl.className = 'fs-glyph-card-label';
+            lbl.textContent = g.char;
+
+            btn.appendChild(tc);
+            btn.appendChild(lbl);
+            btn.addEventListener('click', () => openGlyphTouchup(idx));
+            dom.fsGlyphsGrid.appendChild(btn);
+          });
+        }
+
+        function openGlyphTouchup(idx) {
+          fsState.selectedGlyphIdx = idx;
+          const g = fsState.glyphs[idx];
+          if (!g) return;
+          dom.fsTouchupBox.hidden = false;
+          dom.fsTouchupCharLabel.textContent = g.char;
+          dom.fsGlyphBaselineInput.value = String(g.baselineNudge || 0);
+          dom.fsGlyphBaselineVal.textContent = String(g.baselineNudge || 0);
+          redrawTouchupCanvas();
+          renderGlyphsGrid();
+        }
+
+        function redrawTouchupCanvas() {
+          const g = fsState.glyphs[fsState.selectedGlyphIdx];
+          if (!g) return;
+          const tc = dom.fsTouchupCanvas;
+          const ctx = tc.getContext('2d');
+          ctx.clearRect(0, 0, tc.width, tc.height);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, tc.width, tc.height);
+
+          const baseY = (g.baselineLocalY / g.maskCanvas.height) * tc.height;
+          ctx.strokeStyle = '#93c5fd';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(0, baseY);
+          ctx.lineTo(tc.width, baseY);
+          ctx.stroke();
+
+          ctx.drawImage(g.maskCanvas, 0, 0, tc.width, tc.height);
+        }
+
+        async function runExtractAllGlyphs() {
+          if (!fsState.photoImg || !fsState.corners) return;
+          dom.fsBuildStatus.textContent = 'Scanning ink & vectorizing glyphs...';
+          const rectCanvas = warpSheetToRectifiedCanvas(fsState.photoImg, fsState.corners);
+          const chars = getChars();
+          const rows = getRows();
+          const cellW = (FS_GRID.right - FS_GRID.left) / FS_COLS;
+          const cellH = (FS_GRID.bottom - FS_GRID.top) / rows;
+          const thresholdPct = Number(dom.fsThresholdInput.value);
+          const filterBlue = dom.fsFilterBlueInput.checked;
+
+          const extracted = [];
+          for (let i = 0; i < chars.length; i++) {
+            const r = Math.floor(i / FS_COLS);
+            const c = i % FS_COLS;
+            const cellRect = {
+              x: FS_GRID.left + c * cellW,
+              y: FS_GRID.top + r * cellH,
+              w: cellW,
+              h: cellH,
+            };
+            const { maskCanvas, baselineLocalY } = extractCellInkCanvas(rectCanvas, cellRect, thresholdPct, filterBlue);
+            const vec = vectorizeMaskCanvas(maskCanvas, baselineLocalY);
+            extracted.push({
+              char: chars[i],
+              maskCanvas,
+              baselineLocalY: vec.baselineLocalY,
+              loops: vec.loops,
+              bounds: vec.bounds,
+              baselineNudge: 0,
+            });
+          }
+
+          fsState.glyphs = extracted;
+          fsState.selectedGlyphIdx = -1;
+          dom.fsTouchupBox.hidden = true;
+          setFontStudioStep(3);
+          renderGlyphsGrid();
+          await rebuildOtfAndLiveSample();
+        }
+
+        function loadPhotoImage(img) {
+          fsState.photoImg = img;
+          const { corners, detectedCount } = detectTemplateCorners(img);
+          fsState.corners = corners;
+          dom.fsRedetectCornersBtn.disabled = false;
+          dom.fsExtractGlyphsBtn.disabled = false;
+          dom.fsAlignStatus.textContent =
+            detectedCount === 4
+              ? 'Auto-detected all 4 corner markers. Drag any corner handle if you want to refine alignment.'
+              : `Found ${detectedCount}/4 corner markers. Drag the blue corner handles onto the 4 sheet corners, then click "Convert Photo to Font".`;
+          renderAlignCanvas();
+        }
+
+        // Modal open/close & navigation
+        const openFontStudioModal = () => {
+          dom.fontStudioModal.hidden = false;
+          setFontStudioStep(1);
+          refreshTemplatePreview();
+        };
+
+        dom.openFontStudioBtn.addEventListener('click', openFontStudioModal);
+        dom.headerFontStudioBtn.addEventListener('click', openFontStudioModal);
+        dom.closeFontStudioBtn.addEventListener('click', () => {
+          dom.fontStudioModal.hidden = true;
+        });
+
+        dom.fontStudioModal.querySelectorAll('.fs-step-btn').forEach((btn) => {
+          btn.addEventListener('click', () => setFontStudioStep(Number(btn.dataset.fsstep)));
+        });
+        dom.fsGoStep2Btn.addEventListener('click', () => {
+          setFontStudioStep(2);
+          renderAlignCanvas();
+        });
+
+        dom.fsSheetSetSelect.addEventListener('change', () => {
+          fsState.sheetSet = dom.fsSheetSetSelect.value;
+          refreshTemplatePreview();
+        });
+        dom.fsShowBlankBtn.addEventListener('click', () => {
+          fsState.showExample = false;
+          dom.fsShowBlankBtn.classList.add('active');
+          dom.fsShowExampleBtn.classList.remove('active');
+          refreshTemplatePreview();
+        });
+        dom.fsShowExampleBtn.addEventListener('click', () => {
+          fsState.showExample = true;
+          dom.fsShowExampleBtn.classList.add('active');
+          dom.fsShowBlankBtn.classList.remove('active');
+          refreshTemplatePreview();
+        });
+
+        dom.fsDownloadSheetPngBtn.addEventListener('click', () => {
+          const c = document.createElement('canvas');
+          drawSheetToCanvas(c, false);
+          c.toBlob((blob) => {
+            if (blob) downloadBlobFile(blob, 'HandScript-Font-Template.png');
+          }, 'image/png');
+        });
+
+        dom.fsDownloadSheetPdfBtn.addEventListener('click', () => {
+          const jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+          if (!jsPDFCtor) {
+            showToast('PDF library still loading. Try PNG download instead.', true);
+            return;
+          }
+          const c = document.createElement('canvas');
+          drawSheetToCanvas(c, false);
+          const doc = new jsPDFCtor({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+          doc.addImage(c.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
+          doc.save('HandScript-Font-Template.pdf');
+        });
+
+        // Photo Upload & Demo Photo
+        dom.fsPickPhotoBtn.addEventListener('click', () => dom.fsPhotoFileInput.click());
+        dom.fsPhotoFileInput.addEventListener('change', () => {
+          const file = dom.fsPhotoFileInput.files && dom.fsPhotoFileInput.files[0];
+          dom.fsPhotoFileInput.value = '';
+          if (!file) return;
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = () => {
+            URL.revokeObjectURL(url);
+            loadPhotoImage(img);
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            showToast('Could not read that photo. Please try JPG or PNG.', true);
+          };
+          img.src = url;
+        });
+
+        dom.fsTryDemoPhotoBtn.addEventListener('click', async () => {
+          await ensureFontLoaded('Patrick Hand');
+          const sheetC = document.createElement('canvas');
+          drawSheetToCanvas(sheetC, true);
+          // Place on a slightly tilted warm desk photo to exercise real marker detection + homography
+          const photoC = document.createElement('canvas');
+          photoC.width = 1400;
+          photoC.height = 1920;
+          const pctx = photoC.getContext('2d');
+          pctx.fillStyle = '#ddd7ce';
+          pctx.fillRect(0, 0, photoC.width, photoC.height);
+          pctx.save();
+          pctx.translate(700, 960);
+          pctx.rotate(0.032);
+          pctx.shadowColor = 'rgba(0,0,0,0.22)';
+          pctx.shadowBlur = 24;
+          pctx.drawImage(sheetC, -FS_W * 0.5, -FS_H * 0.5);
+          pctx.restore();
+
+          const img = new Image();
+          img.onload = () => loadPhotoImage(img);
+          img.src = photoC.toDataURL('image/jpeg', 0.94);
+        });
+
+        // Draggable 4-corner handles on alignment canvas
+        const getPhotoCoordFromEvt = (e) => {
+          const rect = dom.fsAlignCanvas.getBoundingClientRect();
+          const img = fsState.photoImg;
+          const natW = img.naturalWidth || img.width;
+          const natH = img.naturalHeight || img.height;
+          const rx = ((e.clientX - rect.left) / Math.max(1, rect.width)) * natW;
+          const ry = ((e.clientY - rect.top) / Math.max(1, rect.height)) * natH;
+          return { x: Math.max(0, Math.min(natW, rx)), y: Math.max(0, Math.min(natH, ry)) };
+        };
+
+        dom.fsAlignCanvas.addEventListener('pointerdown', (e) => {
+          if (!fsState.photoImg || !fsState.corners) return;
+          const pt = getPhotoCoordFromEvt(e);
+          const natW = fsState.photoImg.naturalWidth || fsState.photoImg.width;
+          const hitDist = Math.max(24, natW * 0.045);
+          let bestIdx = -1;
+          let bestD = hitDist;
+          fsState.corners.forEach((c, idx) => {
+            const d = Math.hypot(c.x - pt.x, c.y - pt.y);
+            if (d < bestD) {
+              bestD = d;
+              bestIdx = idx;
+            }
+          });
+          if (bestIdx !== -1) {
+            fsState.draggingIdx = bestIdx;
+            dom.fsAlignCanvas.setPointerCapture(e.pointerId);
+            renderAlignCanvas();
+          }
+        });
+
+        dom.fsAlignCanvas.addEventListener('pointermove', (e) => {
+          if (fsState.draggingIdx === -1 || !fsState.corners) return;
+          fsState.corners[fsState.draggingIdx] = getPhotoCoordFromEvt(e);
+          renderAlignCanvas();
+        });
+
+        const endCornerDrag = () => {
+          if (fsState.draggingIdx !== -1) {
+            fsState.draggingIdx = -1;
+            renderAlignCanvas();
+          }
+        };
+        dom.fsAlignCanvas.addEventListener('pointerup', endCornerDrag);
+        dom.fsAlignCanvas.addEventListener('pointercancel', endCornerDrag);
+
+        dom.fsThresholdInput.addEventListener('input', () => {
+          dom.fsThresholdVal.textContent = `${dom.fsThresholdInput.value}%`;
+        });
+        dom.fsRedetectCornersBtn.addEventListener('click', () => {
+          if (fsState.photoImg) loadPhotoImage(fsState.photoImg);
+        });
+        dom.fsExtractGlyphsBtn.addEventListener('click', runExtractAllGlyphs);
+
+        // Step 3: Glyph Touch-Up Canvas Drawing
+        let drawingTouchup = false;
+        let lastTpt = null;
+        const getTouchupCoord = (e) => {
+          const g = fsState.glyphs[fsState.selectedGlyphIdx];
+          const rect = dom.fsTouchupCanvas.getBoundingClientRect();
+          const mw = g.maskCanvas.width;
+          const mh = g.maskCanvas.height;
+          return {
+            x: ((e.clientX - rect.left) / Math.max(1, rect.width)) * mw,
+            y: ((e.clientY - rect.top) / Math.max(1, rect.height)) * mh,
+          };
+        };
+
+        dom.fsTouchupCanvas.addEventListener('pointerdown', (e) => {
+          const g = fsState.glyphs[fsState.selectedGlyphIdx];
+          if (!g) return;
+          drawingTouchup = true;
+          lastTpt = getTouchupCoord(e);
+          dom.fsTouchupCanvas.setPointerCapture(e.pointerId);
+        });
+
+        dom.fsTouchupCanvas.addEventListener('pointermove', (e) => {
+          if (!drawingTouchup) return;
+          const g = fsState.glyphs[fsState.selectedGlyphIdx];
+          if (!g) return;
+          const pt = getTouchupCoord(e);
+          const mctx = g.maskCanvas.getContext('2d');
+          mctx.save();
+          mctx.lineCap = 'round';
+          mctx.lineJoin = 'round';
+          mctx.lineWidth = fsState.eraserMode ? 14 : 7;
+          if (fsState.eraserMode) {
+            mctx.globalCompositeOperation = 'destination-out';
+            mctx.strokeStyle = 'rgba(0,0,0,1)';
+          } else {
+            mctx.globalCompositeOperation = 'source-over';
+            mctx.strokeStyle = '#12141a';
+          }
+          mctx.beginPath();
+          mctx.moveTo(lastTpt.x, lastTpt.y);
+          mctx.lineTo(pt.x, pt.y);
+          mctx.stroke();
+          mctx.restore();
+          lastTpt = pt;
+          redrawTouchupCanvas();
+        });
+
+        const finishTouchupStroke = () => {
+          if (!drawingTouchup) return;
+          drawingTouchup = false;
+          const g = fsState.glyphs[fsState.selectedGlyphIdx];
+          if (!g) return;
+          const vec = vectorizeMaskCanvas(g.maskCanvas, g.baselineLocalY);
+          g.loops = vec.loops;
+          g.bounds = vec.bounds;
+          renderGlyphsGrid();
+          clearTimeout(fsState.rebuildTimer);
+          fsState.rebuildTimer = setTimeout(rebuildOtfAndLiveSample, 220);
+        };
+        dom.fsTouchupCanvas.addEventListener('pointerup', finishTouchupStroke);
+        dom.fsTouchupCanvas.addEventListener('pointercancel', finishTouchupStroke);
+
+        dom.fsTouchupEraserBtn.addEventListener('click', () => {
+          fsState.eraserMode = !fsState.eraserMode;
+          dom.fsTouchupEraserBtn.textContent = fsState.eraserMode ? 'Mode: Eraser' : 'Mode: Pen';
+        });
+
+        dom.fsTouchupClearBtn.addEventListener('click', () => {
+          const g = fsState.glyphs[fsState.selectedGlyphIdx];
+          if (!g) return;
+          g.maskCanvas.getContext('2d').clearRect(0, 0, g.maskCanvas.width, g.maskCanvas.height);
+          g.loops = [];
+          g.bounds = null;
+          redrawTouchupCanvas();
+          renderGlyphsGrid();
+          rebuildOtfAndLiveSample();
+        });
+
+        dom.fsGlyphBaselineInput.addEventListener('input', () => {
+          const g = fsState.glyphs[fsState.selectedGlyphIdx];
+          if (!g) return;
+          const val = Number(dom.fsGlyphBaselineInput.value);
+          g.baselineNudge = val;
+          dom.fsGlyphBaselineVal.textContent = String(val);
+          clearTimeout(fsState.rebuildTimer);
+          fsState.rebuildTimer = setTimeout(rebuildOtfAndLiveSample, 180);
+        });
+
+        dom.fsDownloadOtfBtn.addEventListener('click', async () => {
+          if (!fsState.otfBuffer) return;
+          const name = (dom.fsFontNameInput.value.trim() || 'My_Handwriting').replace(/[^a-zA-Z0-9_-]+/g, '_');
+          downloadBlobFile(new Blob([fsState.otfBuffer], { type: 'font/otf' }), `${name}.otf`);
+          showToast(`Downloaded ${name}.otf!`);
+        });
+
+        dom.fsSaveAndUseBtn.addEventListener('click', async () => {
+          if (!fsState.otfBuffer) return;
+          try {
+            const cleanName = (dom.fsFontNameInput.value.trim() || 'My Handwriting').slice(0, 42);
+            const id = `font_${Date.now()}`;
+            const rec = {
+              id,
+              name: cleanName,
+              familyName: `HandScriptCustom_${id}`,
+              fontBlob: new Blob([fsState.otfBuffer], { type: 'font/otf' }),
+              createdAt: Date.now(),
+            };
+            await registerCustomFontRecord(rec);
+            await dbPut(STORE_FONTS, rec);
+            state.customFonts.push(rec);
+            state.fontName = rec.familyName;
+            initFontDropdown();
+            dom.fontStudioModal.hidden = true;
+            schedulePreviewRender(true);
+            showToast(`Saved "${cleanName}" and applied it to HandScript!`);
+          } catch (err) {
+            showToast(`Could not save font: ${err.message}`, true);
           }
         });
       }
