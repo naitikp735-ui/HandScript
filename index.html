@@ -3920,6 +3920,10 @@ Next steps for tomorrow's studio session:
         return rawFontSize * m.opticalScale;
       }
 
+      function isCustomUserFont(fontName) {
+        return Array.isArray(state.customFonts) && state.customFonts.some((f) => f.familyName === fontName);
+      }
+
       // ---------------------------------------------------------------------------
       // Neutral Monochrome Grain Generator (Zero Yellow Cast)
       // ---------------------------------------------------------------------------
@@ -5473,7 +5477,10 @@ Next steps for tomorrow's studio session:
 
           const styledSegs = parseInlineStyles(chunk.text);
           for (const seg of styledSegs) {
-            const pieces = seg.text.split(/( +)/);
+            const cleanSegText = seg.text
+              .replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+              .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '');
+            const pieces = cleanSegText.split(/( +)/);
             for (const piece of pieces) {
               if (!piece) continue;
               if (/^ +$/.test(piece)) {
@@ -5497,7 +5504,11 @@ Next steps for tomorrow's studio session:
       }
 
       function parseRawLines(rawText, customBlocks = state.blocks) {
-        const lines = rawText.replace(/\r\n/g, '\n').split('\n');
+        const lines = String(rawText || '')
+          .replace(/\r\n?/g, '\n')
+          .replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+          .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
+          .split('\n');
         const entries = [];
 
         for (let i = 0; i < lines.length; i++) {
@@ -6025,6 +6036,7 @@ Next steps for tomorrow's studio session:
       // ---------------------------------------------------------------------------
       function drawHandwrittenSimpleText(ctx, str, startX, baseY, fontName, fontSize, inkHex, penThickness, randomness, seed, bold = false) {
         let drawX = startX;
+        const isCustom = isCustomUserFont(fontName);
         setCanvasFont(ctx, fontName, fontSize);
         if (state.joinedMode) {
           const wRand = mulberry32(seed);
@@ -6037,12 +6049,14 @@ Next steps for tomorrow's studio session:
           ctx.strokeStyle = inkHex;
           ctx.lineJoin = 'round';
           ctx.lineCap = 'round';
-          const sw = penThickness + (bold ? Math.max(0.85, fontSize * 0.022) : 0);
-          ctx.globalAlpha = 0.22;
-          ctx.lineWidth = sw + 0.7;
-          ctx.strokeText(str, 0, 0);
-          ctx.globalAlpha = 0.92;
-          if (sw > 0.05) {
+          const sw = (isCustom ? penThickness * 0.45 : penThickness) + (bold ? Math.max(0.85, fontSize * 0.022) : 0);
+          if (!isCustom || bold) {
+            ctx.globalAlpha = 0.22;
+            ctx.lineWidth = sw + (isCustom ? 0.25 : 0.7);
+            ctx.strokeText(str, 0, 0);
+          }
+          ctx.globalAlpha = 0.94;
+          if (sw > 0.08) {
             ctx.lineWidth = sw;
             ctx.strokeText(str, 0, 0);
           }
@@ -6051,14 +6065,15 @@ Next steps for tomorrow's studio session:
           return drawX + measureStyledStringWidth(ctx, str, state.letterSpacing);
         }
 
+        const jitMult = isCustom ? 0.28 : 1;
         for (let i = 0; i < str.length; i++) {
           const ch = str[i];
           const cSeed = hashSeed(seed, i + 1, ch.charCodeAt(0), 43);
           const cRand = mulberry32(cSeed);
           const cw = ctx.measureText(ch).width;
-          const yJit = (cRand() - 0.5) * 1.2 * randomness;
-          const rot = (cRand() - 0.5) * 1.1 * randomness * (Math.PI / 180);
-          const alpha = randomness === 0 ? 1 : 0.85 + cRand() * 0.15;
+          const yJit = (cRand() - 0.5) * 1.15 * randomness * jitMult;
+          const rot = (cRand() - 0.5) * 1.05 * randomness * jitMult * (Math.PI / 180);
+          const alpha = randomness === 0 ? 1 : (isCustom ? 0.9 + cRand() * 0.1 : 0.85 + cRand() * 0.15);
 
           ctx.save();
           ctx.translate(drawX + cw * 0.5, baseY + yJit);
@@ -6068,18 +6083,20 @@ Next steps for tomorrow's studio session:
           ctx.strokeStyle = inkHex;
           ctx.lineJoin = 'round';
           ctx.lineCap = 'round';
-          const sw = penThickness + (bold ? Math.max(0.85, fontSize * 0.022) : 0);
-          ctx.globalAlpha = alpha * 0.22;
-          ctx.lineWidth = sw + 0.7;
-          ctx.strokeText(ch, 0, 0);
+          const sw = (isCustom ? penThickness * 0.35 : penThickness) + (bold ? Math.max(0.85, fontSize * 0.022) : 0);
+          if (!isCustom || bold) {
+            ctx.globalAlpha = alpha * 0.22;
+            ctx.lineWidth = sw + (isCustom ? 0.25 : 0.7);
+            ctx.strokeText(ch, 0, 0);
+          }
           ctx.globalAlpha = alpha;
-          if (sw > 0.05) {
+          if (sw > 0.08) {
             ctx.lineWidth = sw;
             ctx.strokeText(ch, 0, 0);
           }
           ctx.fillText(ch, 0, 0);
           ctx.restore();
-          drawX += cw + state.letterSpacing + (cRand() - 0.5) * 0.7 * randomness;
+          drawX += cw + state.letterSpacing + (cRand() - 0.5) * 0.65 * randomness * jitMult;
         }
         return drawX;
       }
@@ -6269,14 +6286,15 @@ Next steps for tomorrow's studio session:
             }
 
             let drawX = item.x;
+            const isCustom = isCustomUserFont(state.fontName);
             if (state.joinedMode) {
               setCanvasFont(ctx, state.fontName, effectiveFontSize);
               const wordSeed = hashSeed(pageIndex + 1, lineObj.lineIndex + 1, itemIdx + 1, 313);
               const wRand = mulberry32(wordSeed);
-              const wOffsetY = (wRand() - 0.5) * 1.15 * randomness + getDriftY(drawX);
-              const wAngle = (wRand() - 0.5) * 0.7 * randomness * (Math.PI / 180);
-              const wScale = 1 + (wRand() - 0.5) * 0.02 * randomness;
-              const wAlpha = randomness === 0 ? 1 : 0.85 + wRand() * 0.15;
+              const wOffsetY = (wRand() - 0.5) * (isCustom ? 0.55 : 1.15) * randomness + getDriftY(drawX);
+              const wAngle = (wRand() - 0.5) * (isCustom ? 0.35 : 0.7) * randomness * (Math.PI / 180);
+              const wScale = 1 + (wRand() - 0.5) * (isCustom ? 0.01 : 0.02) * randomness;
+              const wAlpha = randomness === 0 ? 1 : (isCustom ? 0.9 + wRand() * 0.1 : 0.85 + wRand() * 0.15);
 
               for (let pIdx = 0; pIdx < item.parts.length; pIdx++) {
                 const part = item.parts[pIdx];
@@ -6291,16 +6309,18 @@ Next steps for tomorrow's studio session:
                 ctx.fillStyle = inkHex;
                 setCanvasFont(ctx, state.fontName, effectiveFontSize);
 
-                const strokeW = state.penThickness + (part.bold ? Math.max(0.85, effectiveFontSize * 0.022) : 0);
+                const strokeW = (isCustom ? state.penThickness * 0.4 : state.penThickness) + (part.bold ? Math.max(0.85, effectiveFontSize * 0.022) : 0);
                 ctx.lineJoin = 'round';
                 ctx.lineCap = 'round';
                 ctx.strokeStyle = inkHex;
-                ctx.globalAlpha = wAlpha * 0.22;
-                ctx.lineWidth = strokeW + 0.75;
-                ctx.strokeText(part.text, 0, 0);
+                if (!isCustom || part.bold) {
+                  ctx.globalAlpha = wAlpha * 0.22;
+                  ctx.lineWidth = strokeW + (isCustom ? 0.25 : 0.75);
+                  ctx.strokeText(part.text, 0, 0);
+                }
 
                 ctx.globalAlpha = wAlpha;
-                if (strokeW > 0.05) {
+                if (strokeW > 0.08) {
                   ctx.lineWidth = strokeW;
                   ctx.strokeText(part.text, 0, 0);
                 }
@@ -6321,6 +6341,13 @@ Next steps for tomorrow's studio session:
               }
             } else {
               setCanvasFont(ctx, state.fontName, effectiveFontSize);
+              const wordSeed = hashSeed(pageIndex + 1, lineObj.lineIndex + 1, itemIdx + 1, 317);
+              const wRand = mulberry32(wordSeed);
+              // Cohesive word-level micro-slant + gentle baseline continuity prevents "cutout letter" appearance
+              const wordBaseY = (wRand() - 0.5) * (isCustom ? 0.7 : 0.4) * randomness;
+              const wordSlope = (wRand() - 0.5) * (isCustom ? 0.008 : 0.004) * randomness;
+              const charJitMult = isCustom ? 0.28 : 1;
+
               let underlineStart = null;
               let underlineEnd = null;
               let underlineSeed = 0;
@@ -6352,11 +6379,12 @@ Next steps for tomorrow's studio session:
                   const charW = ctx.measureText(ch).width;
                   if (drawX + charW > spec.rightLimitX) break;
 
-                  const yJitter = (cRand() - 0.5) * 1.35 * randomness + getDriftY(drawX);
-                  const rotRad = (cRand() - 0.5) * 2 * (0.6 * randomness) * (Math.PI / 180);
-                  const scaleVar = 1 + (cRand() - 0.5) * 2 * (0.02 * randomness);
-                  const alpha = randomness === 0 ? 1 : 0.85 + cRand() * 0.15;
-                  const spacingJitter = (cRand() - 0.5) * 0.9 * randomness;
+                  const relX = drawX - item.x;
+                  const yJitter = wordBaseY + relX * wordSlope + (cRand() - 0.5) * 1.25 * randomness * charJitMult + getDriftY(drawX);
+                  const rotRad = (cRand() - 0.5) * 2 * (0.58 * randomness * charJitMult) * (Math.PI / 180);
+                  const scaleVar = 1 + (cRand() - 0.5) * 2 * (0.018 * randomness * (isCustom ? 0.45 : 1));
+                  const alpha = randomness === 0 ? 1 : (isCustom ? 0.89 + cRand() * 0.11 : 0.85 + cRand() * 0.15);
+                  const spacingJitter = (cRand() - 0.5) * 0.85 * randomness * charJitMult;
 
                   const pivotX = charW * 0.5;
                   ctx.save();
@@ -6369,16 +6397,18 @@ Next steps for tomorrow's studio session:
                   ctx.fillStyle = inkHex;
                   setCanvasFont(ctx, state.fontName, effectiveFontSize);
 
-                  const strokeW = state.penThickness + (part.bold ? Math.max(0.85, effectiveFontSize * 0.022) : 0);
+                  const strokeW = (isCustom ? state.penThickness * 0.38 : state.penThickness) + (part.bold ? Math.max(0.85, effectiveFontSize * 0.022) : 0);
                   ctx.lineJoin = 'round';
                   ctx.lineCap = 'round';
                   ctx.strokeStyle = inkHex;
-                  ctx.globalAlpha = alpha * 0.22;
-                  ctx.lineWidth = strokeW + 0.75;
-                  ctx.strokeText(ch, 0, 0);
+                  if (!isCustom || part.bold) {
+                    ctx.globalAlpha = alpha * 0.22;
+                    ctx.lineWidth = strokeW + (isCustom ? 0.25 : 0.75);
+                    ctx.strokeText(ch, 0, 0);
+                  }
 
                   ctx.globalAlpha = alpha;
-                  if (strokeW > 0.05) {
+                  if (strokeW > 0.08) {
                     ctx.lineWidth = strokeW;
                     ctx.strokeText(ch, 0, 0);
                   }
@@ -8958,12 +8988,244 @@ Next steps for tomorrow's studio session:
         return linesOut.join('\n').replace(/\n{3,}/g, '\n\n').trim();
       }
 
+      function cleanUnicodeFormatting(str) {
+        return String(str || '')
+          .replace(/\uFB00/g, 'ff')
+          .replace(/\uFB01/g, 'fi')
+          .replace(/\uFB02/g, 'fl')
+          .replace(/\uFB03/g, 'ffi')
+          .replace(/\uFB04/g, 'ffl')
+          .replace(/\uFB05/g, 'st')
+          .replace(/\uFB06/g, 'st')
+          .replace(/[\u00A0\u2000-\u200A\u202F\u205F\u3000]/g, ' ')
+          .replace(/[\u200B-\u200D\uFEFF\u00AD]/g, '')
+          .replace(/\r\n?/g, '\n');
+      }
+
+      function normalizePastedText(raw) {
+        const cleaned = cleanUnicodeFormatting(raw);
+        const blocks = cleaned.split(/\n[ \t]*\n+/);
+        const outBlocks = [];
+
+        const isListOrSpecialLine = (s) =>
+          /^(\s*[-*•‣◦▪▸►]\s+|\s*\d+[.)]\s+|\s*\$\$|\s*===PAGE_BREAK===|\s*\[(TABLE|IMAGE|DIAGRAM):)/.test(s);
+        const isShortLabelOrHeading = (s) =>
+          s.length <= 42 && (/:$/.test(s) || (/^[A-Z0-9\s\-–—]+$/.test(s) && /[A-Z]/.test(s)));
+
+        for (const block of blocks) {
+          const rawLines = block
+            .split('\n')
+            .map((l) => l.replace(/^\s*[•‣◦▪▸►]\s*/, '- ').replace(/[ \t]+$/g, ''))
+            .filter((l) => l.trim().length > 0);
+          if (rawLines.length === 0) continue;
+
+          const avgLen = rawLines.reduce((acc, l) => acc + l.trim().length, 0) / rawLines.length;
+          const merged = [];
+
+          for (let i = 0; i < rawLines.length; i++) {
+            const cur = rawLines[i].trimStart();
+            if (merged.length === 0) {
+              merged.push(cur);
+              continue;
+            }
+            const prev = merged[merged.length - 1];
+            const prevTrim = prev.trim();
+
+            if (isListOrSpecialLine(cur) || isListOrSpecialLine(prevTrim) || /^\t/.test(rawLines[i])) {
+              merged.push(cur);
+              continue;
+            }
+            if (isShortLabelOrHeading(prevTrim) || isShortLabelOrHeading(cur)) {
+              merged.push(cur);
+              continue;
+            }
+
+            // Rejoin hyphenated word broken across lines
+            if (/[A-Za-z]-$/.test(prevTrim) && /^[a-z]/.test(cur)) {
+              merged[merged.length - 1] = prevTrim.slice(0, -1) + cur;
+              continue;
+            }
+
+            // Merge if previous line broke mid-sentence / mid-clause or looks like short hard-wrapped copy
+            const endsSentence = /[.!?…:"'”)\]]$/.test(prevTrim);
+            const nextStartsLower = /^[a-z0-9,(]/.test(cur);
+            const looksLikeHardWrap = prevTrim.length < 78 && (!endsSentence || nextStartsLower || (rawLines.length >= 3 && prevTrim.length >= avgLen * 0.72));
+
+            if (!endsSentence || nextStartsLower || looksLikeHardWrap) {
+              merged[merged.length - 1] = `${prevTrim} ${cur}`;
+            } else {
+              merged.push(cur);
+            }
+          }
+
+          outBlocks.push(merged.join('\n'));
+        }
+
+        return outBlocks.join('\n\n');
+      }
+
+      async function extractCleanTextFromPdfPage(page) {
+        const viewport = page.getViewport({ scale: 1 });
+        const pageW = viewport.width || 595;
+        const pageH = viewport.height || 842;
+        const tc = await page.getTextContent();
+
+        const runs = [];
+        for (const item of tc.items) {
+          const str = cleanUnicodeFormatting(item.str || '');
+          if (!str) continue;
+          const tr = item.transform || [1, 0, 0, 1, 0, 0];
+          const h = Math.max(6, Math.hypot(tr[2] || 0, tr[3] || 0) || item.height || 11);
+          const x = tr[4] || 0;
+          const y = tr[5] || 0;
+          const w = Math.max(0, Number(item.width) || str.length * h * 0.45);
+          runs.push({ x, y, w, h, str });
+        }
+        if (runs.length === 0) return '';
+
+        const heights = runs.map((r) => r.h).sort((a, b) => a - b);
+        const bodyH = heights[Math.floor(heights.length * 0.5)] || 11;
+        const yTol = Math.max(2.5, bodyH * 0.42);
+
+        const groupRunsToLines = (subset) => {
+          const rows = [];
+          const sorted = [...subset].sort((a, b) => b.y - a.y || a.x - b.x);
+          for (const r of sorted) {
+            let row = rows.find((rw) => Math.abs(rw.y - r.y) <= yTol);
+            if (!row) {
+              row = { y: r.y, hSum: 0, cnt: 0, parts: [] };
+              rows.push(row);
+            }
+            row.parts.push(r);
+            row.hSum += r.h;
+            row.cnt += 1;
+            row.y = (row.y * (row.cnt - 1) + r.y) / row.cnt;
+          }
+          rows.sort((a, b) => b.y - a.y);
+
+          return rows
+            .map((rw) => {
+              rw.parts.sort((a, b) => a.x - b.x);
+              let text = '';
+              let prevRight = null;
+              let rowLeft = rw.parts[0].x;
+              let rowRight = rw.parts[0].x + rw.parts[0].w;
+              for (const pt of rw.parts) {
+                const s = pt.str;
+                if (!s.trim() && text.endsWith(' ')) continue;
+                if (prevRight !== null) {
+                  const gap = pt.x - prevRight;
+                  const gapThreshold = Math.max(1.2, pt.h * 0.16);
+                  if (gap >= gapThreshold && !text.endsWith(' ') && !s.startsWith(' ')) {
+                    text += gap > pt.h * 2.4 ? '  ' : ' ';
+                  }
+                }
+                text += s;
+                prevRight = Math.max(prevRight ?? -Infinity, pt.x + pt.w);
+                rowRight = Math.max(rowRight, pt.x + pt.w);
+              }
+              const cleanedLine = text.replace(/[ \t]{2,}/g, ' ').trim();
+              return {
+                y: rw.y,
+                left: rowLeft,
+                right: rowRight,
+                h: rw.hSum / Math.max(1, rw.cnt),
+                text: cleanedLine.replace(/^[•‣◦▪▸►]\s+/, '- '),
+              };
+            })
+            .filter((rw) => rw.text.length > 0)
+            // Strip isolated top/bottom running page numbers
+            .filter((rw) => {
+              const isEdgeY = rw.y < pageH * 0.06 || rw.y > pageH * 0.94;
+              if (isEdgeY && /^(?:page\s*)?\d{1,4}(?:\s*of\s*\d{1,4})?$/i.test(rw.text)) return false;
+              return true;
+            });
+        };
+
+        // Detect two-column layout via consistent center gutter
+        const allRows = groupRunsToLines(runs);
+        const midX = pageW * 0.5;
+        let splitRows = 0;
+        for (const r of allRows) {
+          // Check raw items on that Y for an interior gap >= 8% page width crossing midX
+          const sameY = runs.filter((it) => Math.abs(it.y - r.y) <= yTol).sort((a, b) => a.x - b.x);
+          for (let k = 0; k < sameY.length - 1; k++) {
+            const gStart = sameY[k].x + sameY[k].w;
+            const gEnd = sameY[k + 1].x;
+            if (gEnd - gStart >= pageW * 0.075 && gStart < midX + pageW * 0.08 && gEnd > midX - pageW * 0.08) {
+              splitRows++;
+              break;
+            }
+          }
+        }
+
+        const columnStreams =
+          allRows.length >= 6 && splitRows / allRows.length >= 0.35
+            ? [
+                groupRunsToLines(runs.filter((it) => it.x + it.w * 0.5 < midX)),
+                groupRunsToLines(runs.filter((it) => it.x + it.w * 0.5 >= midX)),
+              ]
+            : [allRows];
+
+        const colTexts = [];
+        for (const rows of columnStreams) {
+          if (rows.length === 0) continue;
+          const gaps = [];
+          for (let i = 1; i < rows.length; i++) {
+            const g = rows[i - 1].y - rows[i].y;
+            if (g > bodyH * 0.6 && g < bodyH * 3.2) gaps.push(g);
+          }
+          gaps.sort((a, b) => a - b);
+          const medGap = gaps.length > 0 ? gaps[Math.floor(gaps.length * 0.5)] : bodyH * 1.35;
+
+          const lefts = rows.map((r) => r.left).sort((a, b) => a - b);
+          const rights = rows.map((r) => r.right).sort((a, b) => a - b);
+          const baseLeft = lefts[Math.floor(lefts.length * 0.25)] ?? 0;
+          const typicalRight = rights[Math.floor(rights.length * 0.8)] ?? pageW * 0.9;
+
+          const paras = [rows[0].text];
+          for (let i = 1; i < rows.length; i++) {
+            const prevRow = rows[i - 1];
+            const curRow = rows[i];
+            const vGap = prevRow.y - curRow.y;
+            const curTxt = curRow.text;
+
+            const isList = /^(- |\d+[.)]\s)/.test(curTxt);
+            const prevIsHeading = prevRow.h > bodyH * 1.18 || (prevRow.text.length <= 45 && !/[.,;]$/.test(prevRow.text) && prevRow.right < typicalRight - bodyH * 8);
+            const curIsHeading = curRow.h > bodyH * 1.18 || (curTxt.length <= 42 && /^[A-Z0-9\s\-:]+$/.test(curTxt) && /[A-Z]/.test(curTxt));
+            const isIndented = curRow.left > baseLeft + bodyH * 1.25;
+            const prevShortEnd = prevRow.right < typicalRight - bodyH * 5.5 && /[.!?:"'”)]$/.test(prevRow.text);
+
+            if (vGap > medGap * 1.45) {
+              paras.push('');
+              paras.push(curTxt);
+              continue;
+            }
+            if (isList || prevIsHeading || curIsHeading || isIndented || prevShortEnd) {
+              paras.push(curTxt);
+              continue;
+            }
+
+            const lastIdx = paras.length - 1;
+            const prevTxt = paras[lastIdx];
+            if (/[A-Za-z]-$/.test(prevTxt) && /^[a-z]/.test(curTxt)) {
+              paras[lastIdx] = prevTxt.slice(0, -1) + curTxt;
+            } else {
+              paras[lastIdx] = `${prevTxt} ${curTxt}`;
+            }
+          }
+          colTexts.push(paras.join('\n').replace(/\n{3,}/g, '\n\n').trim());
+        }
+
+        return colTexts.filter(Boolean).join('\n\n');
+      }
+
       async function extractTextAndBlocksFromFile(file, allowOcrPrompt = false) {
         const lower = file.name.toLowerCase();
         const extraBlocks = {};
 
         if (lower.endsWith('.txt') || file.type === 'text/plain') {
-          const text = await file.text();
+          const text = cleanUnicodeFormatting(await file.text());
           return { text, blocks: extraBlocks, needsOcrPdfDoc: null };
         }
 
@@ -8982,23 +9244,7 @@ Next steps for tomorrow's studio session:
           const pageTexts = [];
           for (let p = 1; p <= pdfDoc.numPages; p++) {
             const page = await pdfDoc.getPage(p);
-            const tc = await page.getTextContent();
-            const linesMap = [];
-            for (const item of tc.items) {
-              if (!item.str) continue;
-              const y = Math.round((item.transform[5] || 0) / 4) * 4;
-              let row = linesMap.find((r) => Math.abs(r.y - y) <= 4);
-              if (!row) {
-                row = { y, parts: [] };
-                linesMap.push(row);
-              }
-              row.parts.push({ x: item.transform[4] || 0, str: item.str });
-            }
-            linesMap.sort((a, b) => b.y - a.y);
-            const pageStr = linesMap
-              .map((r) => r.parts.sort((a, b) => a.x - b.x).map((pt) => pt.str).join(' ').replace(/\s+/g, ' ').trim())
-              .filter(Boolean)
-              .join('\n');
+            const pageStr = await extractCleanTextFromPdfPage(page);
             if (pageStr) pageTexts.push(pageStr);
           }
 
@@ -9622,6 +9868,13 @@ Next steps for tomorrow's studio session:
             e.preventDefault();
             const parsedText = docxHtmlToHandScriptText(html, state.blocks);
             insertTextAtCursor(parsedText);
+            return;
+          }
+          const plain = cd.getData('text/plain');
+          if (plain) {
+            e.preventDefault();
+            const cleaned = normalizePastedText(plain);
+            insertTextAtCursor(cleaned);
           }
         });
 
@@ -10918,7 +11171,7 @@ Next steps for tomorrow's studio session:
               }
               if (Math.abs(area2) * 0.5 < 14) continue;
 
-              const simp = rdpSimplifyClosed(clean, 1.35);
+              const simp = rdpSimplifyClosed(clean, 1.05);
               if (simp.length >= 3) loops.push(simp);
             }
           }
@@ -11030,8 +11283,27 @@ Next steps for tomorrow's studio session:
             }
           }
 
+          // Smooth jagged pixel staircases (fill 1px concavities, shave isolated 1px spurs)
+          const smoothMask = new Uint8Array(rawMask);
+          for (let y = 1; y < upH - 1; y++) {
+            for (let x = 1; x < upW - 1; x++) {
+              const idx = y * upW + x;
+              let nb = 0;
+              if (rawMask[idx - upW - 1]) nb++;
+              if (rawMask[idx - upW]) nb++;
+              if (rawMask[idx - upW + 1]) nb++;
+              if (rawMask[idx - 1]) nb++;
+              if (rawMask[idx + 1]) nb++;
+              if (rawMask[idx + upW - 1]) nb++;
+              if (rawMask[idx + upW]) nb++;
+              if (rawMask[idx + upW + 1]) nb++;
+              if (!rawMask[idx] && nb >= 6) smoothMask[idx] = 1;
+              else if (rawMask[idx] && nb <= 2) smoothMask[idx] = 0;
+            }
+          }
+
           for (let i = 0, p = 0; i < d.length; i += 4, p++) {
-            if (rawMask[p]) {
+            if (smoothMask[p]) {
               d[i] = 18; d[i + 1] = 20; d[i + 2] = 26; d[i + 3] = 255;
             } else {
               d[i] = 255; d[i + 1] = 255; d[i + 2] = 255; d[i + 3] = 0;
@@ -11045,7 +11317,6 @@ Next steps for tomorrow's studio session:
         function buildOpentypeBufferFromGlyphs(fontTitle) {
           const ot = window.opentype;
           if (!ot) throw new Error('Font compiler library not loaded yet.');
-          const chars = getChars();
           const rows = getRows();
           const cellH = (FS_GRID.bottom - FS_GRID.top) / rows;
           const writingSpanH = cellH * (0.94 - 0.24) * 2;
@@ -11056,13 +11327,13 @@ Next steps for tomorrow's studio session:
             new ot.Glyph({
               name: '.notdef',
               unicode: 0,
-              advanceWidth: 500,
+              advanceWidth: 420,
               path: new ot.Path(),
             }),
             new ot.Glyph({
               name: 'space',
               unicode: 32,
-              advanceWidth: 340,
+              advanceWidth: 265,
               path: new ot.Path(),
             }),
           ];
@@ -11071,9 +11342,25 @@ Next steps for tomorrow's studio session:
             const g = fsState.glyphs[i];
             if (!g || !g.bounds || g.loops.length === 0) continue;
             const path = new ot.Path();
-            const lsb = 52;
+            const ch = g.char;
+            let lsb = 18;
+            let rsb = 18;
+            let minAdv = 130;
+            if ('ilj|!.,:;\'"'.includes(ch)) {
+              lsb = 15;
+              rsb = 17;
+              minAdv = 86;
+            } else if (/^[a-z]$/.test(ch)) {
+              lsb = 16;
+              rsb = 16;
+              minAdv = 128;
+            } else if (/^[A-Z0-9]$/.test(ch)) {
+              lsb = 26;
+              rsb = 22;
+              minAdv = 165;
+            }
             const inkW = g.bounds.maxX - g.bounds.minX;
-            const advW = Math.max(220, Math.round(inkW * unitScale + lsb * 2));
+            const advW = Math.max(minAdv, Math.round(inkW * unitScale + lsb + rsb));
 
             for (const poly of g.loops) {
               if (poly.length < 3) continue;
